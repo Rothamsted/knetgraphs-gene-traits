@@ -1,0 +1,8 @@
+# Used by Binder in Jupyter Notebooks: KnetMiner_SPARQL_TEA.ipynb
+pandas
+numpy
+scipy
+SPARQLWrapper
+base64
+IPython
+ipywidgets
