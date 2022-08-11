@@ -1,4 +1,4 @@
-# Import SPARQLWrapper library to use the SPARQL endpoint, pandas, scipy, np
+# Import SPARQLWrapper library to use the SPARQL endpoint, pandas, scipy, np, and HTML
 from SPARQLWrapper import SPARQLWrapper2
 
 import pandas as pd
@@ -7,6 +7,8 @@ import scipy.stats as stats
 
 import numpy as np
 
+import base64
+from IPython.display import HTML
 
 # create variable for SPARQL endpoint
 sparql = SPARQLWrapper2 ( "http://knetminer-data.cyverseuk.org/lodestar/sparql" )
@@ -15,6 +17,16 @@ sparql = SPARQLWrapper2 ( "http://knetminer-data.cyverseuk.org/lodestar/sparql" 
 # create a function to flatten a list of lists into a single list
 def flatten(xss):
     return [x for xs in xss for x in xs]
+
+
+# A function to create download link for csv files
+def create_download_link( df, filename, title = "Download CSV file"):
+    csv = df.to_csv()
+    b64 = base64.b64encode(csv.encode())
+    payload = b64.decode()
+    html = '<a download="{filename}" href="data:text/csv;base64,{payload}" target="_blank">{title}</a>'
+    html = html.format(payload=payload,title=title,filename=filename)
+    return HTML(html)
 
 
 # A function to create dataframe for Tax IDs and their names
