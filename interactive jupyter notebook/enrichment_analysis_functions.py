@@ -56,10 +56,10 @@ def get_gene_count(taxID):
     sparql.setQuery ( query_count )
     result = sparql.query().bindings
     result = [ [ r['Count'].value] for r in result ]
-    total_genes = int(result[0][0])
+    total_db_genes = int(result[0][0])
     
-    print("Total Number of Genes = " + str(total_genes))
-    return total_genes
+    print("Total Number of Genes = " + str(total_db_genes))
+    return total_db_genes
 
 
 # Create a function to get the list of studies for each species
@@ -102,18 +102,6 @@ def get_study_list(taxID):
 
     return dframe_study_list
 
-
-# Create a function to calculate adjusted p-values (or Q-values) using numpy
-# refrence: https://stackoverflow.com/questions/7450957/how-to-implement-rs-p-adjust-in-python
-
-# p is p-values , q is adjusted p-values
-def p_adjust_bh(p):
-    """Benjamini-Hochberg p-value correction for multiple hypothesis testing."""
-    p = np.asfarray(p) # Return an array converted to a float type
-    by_descend = p.argsort()[::-1]
-    steps = float(len(p)) / np.arange(len(p), 0, -1)
-    q = np.minimum(1, np.minimum.accumulate(steps * p[by_descend]))
-    return by_descend, q
 
 # Function to get all the traits related to the genes
 def get_database_csv(taxID, database):
@@ -247,6 +235,7 @@ def get_database_csv(taxID, database):
     print(f"File 'GeneTraitTable_{taxID}.csv' is saved.")
 
 
+# Get the differentially expressed genes in the study
 def get_study_DEXgenes(studyAcc):
     query_study = """
     PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
@@ -285,3 +274,108 @@ def get_study_DEXgenes(studyAcc):
 
     print(" Number of genes in study is: " + str(len(total_DEXgenes)))
     return total_DEXgenes
+
+
+# Use the study/user list of genes to extract their rows from the dframe_GeneTrait
+def get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes):
+    # Extract the rows containg the genes list from the first dataframe (dframe_GeneTrait)
+    dframe_GeneTrait_filtered = dframe_GeneTrait[dframe_GeneTrait['Gene Accession'].isin(total_DEXgenes)]
+
+    # Sort dframe_GeneTrait_filtered 
+    dframe_GeneTrait_filtered = dframe_GeneTrait_filtered.sort_values(['Trait Accession', 'Gene Name', 'Evidence'],
+                                                                    ascending = [True, True, True])
+
+    # update the dataframe index
+    dframe_GeneTrait_filtered = dframe_GeneTrait_filtered.reset_index(drop=True)
+
+    return dframe_GeneTrait_filtered
+
+
+# Create a function to calculate adjusted p-values (or Q-values) using numpy
+# refrence: https://stackoverflow.com/questions/7450957/how-to-implement-rs-p-adjust-in-python
+
+# p is p-values , q is adjusted p-values
+def p_adjust_bh(p):
+    """Benjamini-Hochberg p-value correction for multiple hypothesis testing."""
+    p = np.asfarray(p) # Return an array converted to a float type
+    by_descend = p.argsort()[::-1]
+    steps = float(len(p)) / np.arange(len(p), 0, -1)
+    q = np.minimum(1, np.minimum.accumulate(steps * p[by_descend]))
+    return by_descend, q
+
+
+# Perform Enrichment Analysis using SciPy and calculate adjusted p-value
+def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
+
+    # get dframe_GeneTrait_filtered
+    dframe_GeneTrait_filtered = get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes)
+
+    # create dataframe to add the odd ratio and p-value
+    df_Ftest = pd.DataFrame (columns = ["Trait Accession", "Trait Name", "odds ratio", "exact p-value",
+                                    "Total number of related genes in database",
+                                        "Number of related genes in user/study list"])
+
+    # create list to add the Trait Accessions numbers
+    traits =  []
+
+    ### for each trait, calculate odds ratio, exact p-value and number of related genes in database and list ###
+
+    for x, row in dframe_GeneTrait_filtered.iterrows():
+        trait_acc = row['Trait Accession']
+        
+        if trait_acc not in traits:
+            
+            traits.append(trait_acc)
+            trait_name = row['Trait Name']
+            
+            # 1a. Get the complete set of genes linked to the trait in the gene list
+            select_trait = dframe_GeneTrait_filtered.loc[dframe_GeneTrait_filtered['Trait Accession'] == trait_acc]
+            
+            # 1b. Get the distinct list of genes linked to the trait in the gene list
+            trait_DEXgenes = set(select_trait['Gene Accession'].unique())
+            
+            
+            # 2a. Get the complete set of genes linked to the trait in the database (dframe_GeneTrait)
+            select_Totaltrait = dframe_GeneTrait.loc[dframe_GeneTrait['Trait Accession'] == trait_acc]
+            
+            # 2b. Get the distinct list of genes linked to the trait in dframe_GeneTrait
+            total_TraitGenes = set(select_Totaltrait['Gene Accession'].unique())
+            
+            
+            # 3. Calculate the odds ratio and p-value using scipy
+            a= len(trait_DEXgenes)
+            b= len(total_DEXgenes)-len(trait_DEXgenes)
+            c= len(total_TraitGenes)-len(trait_DEXgenes)
+            d= total_db_genes-a-b-c
+            data = [[a, b], [c, d]]
+            oddsratio, pvalue = stats.fisher_exact(data)
+            
+            # 4. Add the data to the df_Ftest table
+            df = {'Trait Accession': trait_acc, 'Trait Name': trait_name, 'odds ratio': oddsratio, 'exact p-value': pvalue,
+                'Total number of related genes in database': len(total_TraitGenes),
+                'Number of related genes in user/study list': a}
+            df_Ftest = df_Ftest.append(df, ignore_index = True)
+
+
+    ### calculate adjusted p-value ###
+
+    # Get the list of p-values from the dataframe
+    pvalues = df_Ftest['exact p-value'].tolist()
+    
+    # get by_descend and adj_pvalues
+    by_descend, q = p_adjust_bh(pvalues)
+
+    # sort the table by the indecies (used in the formula)
+    df_Ftest_sorted = df_Ftest.reindex(by_descend)
+
+    # add column to dataframe
+    df_Ftest_sorted.insert(4, 'adj p-value', q)
+
+    # sort the dataframe according to adjusted p-value
+    df_Ftest_sorted = df_Ftest_sorted.sort_values(by=['adj p-value'])
+
+    # update the dataframe index
+    df_Ftest_sorted = df_Ftest_sorted.reset_index(drop=True)
+
+    return dframe_GeneTrait_filtered, df_Ftest_sorted
+    
