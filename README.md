@@ -4,3 +4,6 @@ Trait Enrichment Analysis Use Case. Tools to analyse plant biology knowledge gra
 
 For running the jupyter notebook for Trait Enrichment Analysis using KnetMiner SPARQL endpoint, click on launch binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Rothamsted/knetgraphs-gene-traits/main?labpath=interactive_jupyter_notebook%2FKnetMiner_SPARQL_TEA.ipynb)
+
+For running the jupyter notebook for gene-trait relations from the database, click on launch binder:
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Rothamsted/knetgraphs-gene-traits/main?labpath=interactive_jupyter_notebook%2FGeneTrait_database_relations.ipynb)
