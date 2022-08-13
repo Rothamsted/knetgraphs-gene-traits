@@ -20,7 +20,7 @@ def flatten(xss):
 
 
 # A function to create download link for csv files
-def create_download_link( df, filename, title = "Download CSV file"):
+def create_download_link( df, filename, title):
     csv = df.to_csv()
     b64 = base64.b64encode(csv.encode())
     payload = b64.decode()
