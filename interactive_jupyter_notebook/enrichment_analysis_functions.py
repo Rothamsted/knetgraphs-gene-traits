@@ -396,6 +396,7 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     display(create_download_link(dframe_GeneTrait_filtered, "GeneTrait_filtered_table.csv", "Download gene-trait table CSV file"))
 
     ### show trait enrichment table ###
+    print("Trait Enrichment Table:")
     display(df_Ftest_sorted)
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
