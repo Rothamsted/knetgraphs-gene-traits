@@ -375,7 +375,7 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
 
     # Get the list of p-values from the dataframe
     pvalues = df_Ftest['exact p-value'].tolist()
-    
+
     # get by_descend and adj_pvalues
     by_descend, q = p_adjust_bh(pvalues)
 
@@ -390,6 +390,13 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
 
     # update the dataframe index
     df_Ftest_sorted = df_Ftest_sorted.reset_index(drop=True)
+
+    ### create download links for final tables ###
+    display(create_download_link(df_Ftest_sorted, "enrichment_table.csv", "Download enrichment table CSV file"))
+    display(create_download_link(dframe_GeneTrait_filtered, "GeneTrait_filtered_table.csv", "Download gene-trait table CSV file"))
+
+    ### show trait enrichment table ###
+    display(df_Ftest_sorted)
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
     
