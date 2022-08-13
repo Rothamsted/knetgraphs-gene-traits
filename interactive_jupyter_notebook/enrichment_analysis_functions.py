@@ -22,7 +22,7 @@ def flatten(xss):
 # A function to create download link to save datafarames as csv files
 # refrence: https://www.codegrepper.com/code-examples/python/download+csv+file+from+jupyter+notebook
 
-def create_download_link( df, filename, title):
+def create_download_link(df, filename, title):
     csv = df.to_csv()
     b64 = base64.b64encode(csv.encode())
     payload = b64.decode()
