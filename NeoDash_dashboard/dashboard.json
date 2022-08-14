@@ -1,0 +1,972 @@
+{
+  "title": "KnetMiner Dashboard",
+  "version": "2.1",
+  "settings": {
+    "pagenumber": 1,
+    "editable": true,
+    "fullscreenEnabled": true,
+    "parameters": {
+      "neodash_gene_iri": "http://knetminer.org/data/rdf/resources/gene_horvu1hr1g002890",
+      "neodash_gene_prefname": null,
+      "neodash_person_name": "Keanu Reeves",
+      "neodash_gene_protein": "Gene",
+      "neodash_node_label": "Gene",
+      "neodash_trait_prefname": "amylose content",
+      "neodash_gene_taxid": null
+    },
+    "downloadImageEnabled": true,
+    "disableRowLimiting": true,
+    "queryTimeLimit": 400
+  },
+  "pages": [
+    {
+      "title": "General",
+      "reports": [
+        {
+          "title": "Welcome",
+          "query": "**This is KnetMiner dashboard!** \n \nYou can click (⋮) to edit this report, or add a new report to get started. You can run any Cypher query directly from each report and render data in a variety of formats. \n \nTip: try _renaming_ this report by editing the title text. You can also edit the dashboard header at the top of the screen.\n\n[KnetMiner](https://knetminer.com/)\n\n\n\n\n",
+          "width": 3,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "text",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "",
+          "query": "MATCH (n:`Gene`) \nWHERE toLower(toString(n.`prefName`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`prefName` as value LIMIT 5",
+          "width": 3,
+          "height": 2,
+          "x": 3,
+          "y": 0,
+          "type": "select",
+          "selection": {},
+          "settings": {
+            "type": "Node Property",
+            "entityType": "Gene",
+            "propertyType": "prefName",
+            "parameterName": "neodash_gene_prefname"
+          }
+        },
+        {
+          "title": "",
+          "query": "MATCH path = (gene_1:Gene)\n  - [part_of_1_23:part_of] - (coExpCluster_23:CoExpCluster)\n  - [enriched_for_23_4:enriched_for] - (bioProc_4:BioProc)\nWHERE gene_1.prefName = $neodash_gene_prefname\nRETURN path LIMIT 10\n\n\n",
+          "width": 4,
+          "height": 2,
+          "x": 6,
+          "y": 0,
+          "type": "graph",
+          "selection": {
+            "Concept": "prefName",
+            "Resource": "prefName",
+            "Gene": "altName",
+            "CoExpCluster": "prefName",
+            "BioProc": "prefName"
+          },
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Total Node Count",
+          "query": "Match (n)\nRETURN COUNT(n) as Node_count",
+          "width": 5,
+          "height": 1,
+          "x": 0,
+          "y": 2,
+          "type": "value",
+          "selection": {},
+          "settings": {
+            "nodePositions": {},
+            "textAlign": "center",
+            "verticalAlign": "middle",
+            "color": "blue"
+          }
+        },
+        {
+          "title": "Total Edge Count",
+          "query": "Match (n)-[r]->()\nRETURN COUNT(r) as Edge_count",
+          "width": 5,
+          "height": 1,
+          "x": 5,
+          "y": 2,
+          "type": "value",
+          "selection": {},
+          "settings": {
+            "nodePositions": {},
+            "textAlign": "center",
+            "verticalAlign": "middle",
+            "color": "blue"
+          }
+        },
+        {
+          "title": "Node types and counts",
+          "query": "MATCH (n)\nUNWIND LABELS(n) as label\nWITH label\nRETURN DISTINCT label as Node_Types, count(label) as Node_count\nORDER BY Node_count DESC\n\n//MATCH (n)\n//RETURN distinct labels(n) as Node_Types, count (n) as Node_count",
+          "width": 5,
+          "height": 5,
+          "x": 0,
+          "y": 3,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {},
+            "allowDownload": true,
+            "autorun": true
+          }
+        },
+        {
+          "title": "Edge types and counts",
+          "query": "MATCH ()-[r]->()\nRETURN distinct type(r) as Edge_Types, count(r) as Edge_count\nORDER BY Edge_count DESC",
+          "width": 5,
+          "height": 5,
+          "x": 5,
+          "y": 3,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Edges where type is not 'dataSource'",
+          "query": "MATCH ()-[r]->()\nWHERE type(r) <> 'dataSource'\nRETURN distinct type(r) as Edge_Types, count(r) as Edge_count\nORDER BY Edge_count DESC",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 8,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Edges where type is not dataSource, identifier",
+          "query": "MATCH ()-[r]->()\nWHERE NOT (type(r) IN ['dataSource', 'identifier'])\nRETURN distinct type(r) as Edge_Types, count(r) as Edge_count\nORDER BY Edge_count DESC",
+          "width": 6,
+          "height": 2,
+          "x": 5,
+          "y": 8,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Breakdown of Datasources and counts",
+          "query": "MATCH (n:DataSource)\nRETURN distinct n.identifier as Data_Source, count(n) as Node_Count\nORDER BY Node_Count DESC",
+          "width": 5,
+          "height": 5,
+          "x": 0,
+          "y": 10,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {},
+            "columnWidths": "[2,1]"
+          }
+        },
+        {
+          "title": "Schema",
+          "query": "CALL db.schema.visualization\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 15,
+          "type": "graph",
+          "selection": {
+            "EvidenceType": "name",
+            "Comp": "name",
+            "SNPEffect": "name",
+            "ProtDomain": "name",
+            "Gene": "name",
+            "BioProc": "name",
+            "SNP": "name",
+            "PlantOntologyTerm": "name",
+            "EC": "name",
+            "Concept": "name",
+            "Path": "name",
+            "Enzyme": "name",
+            "Accession": "name",
+            "Resource": "(label)",
+            "Publication": "name",
+            "Reaction": "name",
+            "Protein": "name",
+            "DataSource": "name",
+            "CoExpStudy": "name",
+            "Phenotype": "name",
+            "MolFunc": "name",
+            "CelComp": "name",
+            "CoExpCluster": "name",
+            "Trait": "name",
+            "Transport": "name",
+            "Protcmplx": "name"
+          },
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of dataSource relations per DataSource",
+          "query": "MATCH (n:DataSource)-[r:dataSource]-()\nRETURN distinct n.identifier as Data_Source, count(r) as DataSource_relations_count\nORDER BY DataSource_relations_count DESC",
+          "width": 6,
+          "height": 5,
+          "x": 5,
+          "y": 10,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "columnWidths": "[2,1]"
+          }
+        },
+        {
+          "title": "",
+          "query": "MATCH (n:DataSource)\nRETURN EXISTS((n)<-[:dataSource]-()) AS is_dataSource_present, count(*) AS count",
+          "width": 6,
+          "height": 2,
+          "x": 5,
+          "y": 15,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        },
+        {
+          "title": "DataSource.label",
+          "query": "MATCH (n:DataSource)\nRETURN distinct n.label as Data_Source, count(n) as Node_Count\nORDER BY Node_Count DESC\n\n\n",
+          "width": 4,
+          "height": 2,
+          "x": 0,
+          "y": 17,
+          "type": "table",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "title": "Species",
+      "reports": [
+        {
+          "title": "number of Genes per Tax ID",
+          "query": "MATCH (g:Gene)\nRETURN distinct g.TAXID as TAXID, count (g) as Genes_count\nORDER BY Genes_count DESC",
+          "width": 5,
+          "height": 2,
+          "x": 5,
+          "y": 0,
+          "type": "bar",
+          "selection": {
+            "index": "TAXID",
+            "value": "Genes_count",
+            "key": "(none)"
+          },
+          "settings": {
+            "nodePositions": {},
+            "frozen": false,
+            "styleRules": [
+              {
+                "field": "TAXID",
+                "condition": ">",
+                "value": "\"null\"",
+                "customization": "bar color",
+                "customizationValue": "#0093ff"
+              }
+            ],
+            "valueScale": "linear",
+            "barValues": true,
+            "allowDownload": true
+          }
+        },
+        {
+          "title": "number of Proteins per TAXID",
+          "query": "MATCH (p:Protein)\nRETURN distinct p.TAXID as TAXID, count (p) as Protein_count\nORDER BY Protein_count DESC",
+          "width": 6,
+          "height": 2,
+          "x": 6,
+          "y": 2,
+          "type": "pie",
+          "selection": {
+            "index": "TAXID",
+            "value": "Protein_count",
+            "key": "(none)"
+          },
+          "settings": {
+            "nodePositions": {},
+            "frozen": false,
+            "sortByValue": true,
+            "legend": false,
+            "marginTop": 70,
+            "marginBottom": 30
+          },
+          "refreshRate": ""
+        },
+        {
+          "title": "TAXID count",
+          "query": "MATCH (g)\nWHERE g:Gene OR g:Protein\nWITH distinct labels(g) as Labs, count(g.TAXID) as total_TAXID_count, count(distinct g.TAXID) as distinct_TAXID_count\nUNWIND Labs as Labels\nWITH Labels, total_TAXID_count, distinct_TAXID_count\nWHERE Labels IN ['Gene', 'Protein']\nRETURN Labels, total_TAXID_count, distinct_TAXID_count",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "columnWidths": "[1,2,2]"
+          }
+        },
+        {
+          "title": "number of Genes/Proteins per TAXID",
+          "query": "// Get gene count per Tax ID\nMATCH (g:Gene)\nWITH distinct(g.TAXID) as TAXID, count(g) as Gene_count\nWITH collect({TAXID: TAXID, Gene_count: Gene_count, Protein_count: 0}) as rows\n// Get protein count per Tax ID and join results with previous query\nMATCH (p:Protein)\nWITH distinct(p.TAXID) as TAXID, count(p) as Protein_count, rows\nWITH rows + collect({TAXID: TAXID, Gene_count: 0, Protein_count: Protein_count}) as allRows\n// separate the rows\nUNWIND allRows as row\n// Define the column variables from each row\nWITH row.TAXID as TAXID, row.Gene_count as Gene_count, row.Protein_count as Protein_count\n// Return the columns by adding the Gene-count and Protien_count to avoid repeated Tax IDs\nRETURN TAXID, sum(Gene_count) as Gene_count, sum(Protein_count) as Protein_count\n// order by Gene_count (to be at the top, as they are fewer than Protein_count)\nORDER BY Gene_count DESC",
+          "width": 6,
+          "height": 3,
+          "x": 0,
+          "y": 2,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "allowDownload": true,
+            "columnWidths": "[1,2,2]"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Genes/Proteins",
+      "reports": [
+        {
+          "title": "number of Gene-Protein relationships per Gene TAXID",
+          "query": "MATCH (g:Gene)-[r:enc]->(:Protein)\nRETURN distinct g.TAXID as Gene_TAXID, count (r) as Gene_Protein_relationship_count\nORDER BY Gene_Protein_relationship_count DESC",
+          "width": 7,
+          "height": 3,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          },
+          "refreshRate": ""
+        },
+        {
+          "title": "Count Protein-[ortho]-Protein relationships for pairs of TAXIDs",
+          "query": "MATCH (protein1:Protein)-[r2:ortho]->(protein2:Protein)\nRETURN protein1.TAXID, protein2.TAXID, COUNT(*) as homology_relation_count\nORDER BY homology_relation_count DESC",
+          "width": 8,
+          "height": 2,
+          "x": 0,
+          "y": 4,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of homology (ortho/orthologue) relationships",
+          "query": "MATCH ()-[r:ortho]->() RETURN count(r)\n\n\n",
+          "width": 7,
+          "height": 1,
+          "x": 0,
+          "y": 3,
+          "type": "value",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of Gene out degree",
+          "query": "MATCH (n:Gene)\nRETURN size((n)-->()) AS Gene_Out_Degree, Count(*) AS Count_Out_Degree\nORDER BY Gene_Out_Degree\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 6,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of Gene in degree",
+          "query": "MATCH (n:Gene)\nRETURN size((n)<--()) AS Gene_In_Degree, Count(*) AS Count_In_Degree\nORDER BY Gene_In_Degree\n\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 5,
+          "y": 6,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of Proteins out degree",
+          "query": "MATCH (n:Protein)\nRETURN size((n)-->()) AS Protein_Out_Degree, Count(*) AS Count_Out_Degree\nORDER BY Protein_Out_Degree\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 8,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of Proteins in degree",
+          "query": "MATCH (n:Protein)\nRETURN size((n)<--()) AS Protein_In_Degree, Count(*) AS Count_In_Degree\nORDER BY Protein_In_Degree\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 5,
+          "y": 8,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Number of genes with gene name (preferred vs not)",
+          "query": "MATCH (n:Gene)\nRETURN EXISTS(n.prefName) AS is_prefName_present, count(*) AS count",
+          "width": 7,
+          "height": 2,
+          "x": 0,
+          "y": 10,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        }
+      ]
+    },
+    {
+      "title": "Traits",
+      "reports": [
+        {
+          "title": "number of Trait nodes degree",
+          "query": "MATCH (n:Trait)\nRETURN SIZE((n)--()) AS Degree, Count(*) AS Nodes_Count\nORDER BY Degree",
+          "width": 5,
+          "height": 3,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Traits with least links",
+          "query": "MATCH (n:Trait)\nWITH n, SIZE((n)--()) AS Degree\nWITH min(Degree) as min_Degree\nMATCH (n:Trait)\nWHERE SIZE((n)--()) = min_Degree\nRETURN n.prefName as Traits_with_least_links",
+          "width": 4,
+          "height": 2,
+          "x": 0,
+          "y": 3,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Traits with most links",
+          "query": "MATCH (n:Trait)\nWITH n, SIZE((n)--()) AS Degree\nWITH max(Degree) as max_Degree\nMATCH (n:Trait)\nWHERE SIZE((n)--()) = max_Degree\nRETURN n.prefName as Traits_with_most_links",
+          "width": 4,
+          "height": 2,
+          "x": 4,
+          "y": 3,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Choose Trait Name",
+          "query": "MATCH (n:`Trait`) \nWHERE toLower(toString(n.`prefName`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`prefName` as value LIMIT 5",
+          "width": 4,
+          "height": 2,
+          "x": 8,
+          "y": 3,
+          "type": "select",
+          "selection": {},
+          "settings": {
+            "type": "Node Property",
+            "entityType": "Trait",
+            "propertyType": "prefName",
+            "parameterName": "neodash_trait_prefname",
+            "clearParameterOnFieldClear": false,
+            "manualPropertyNameSpecification": false
+          }
+        },
+        {
+          "title": "Genes linked to the chosen Trait",
+          "query": "MATCH p=(t:Trait)--(g:Gene)\nWHERE t.prefName = $neodash_trait_prefname\nRETURN p\n\n",
+          "width": 12,
+          "height": 2,
+          "x": 0,
+          "y": 5,
+          "type": "graph",
+          "selection": {
+            "Concept": "(label)",
+            "Resource": "(label)",
+            "Trait": "prefName",
+            "Gene": "prefName"
+          },
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of Gene-[cooc_wi]-Trait relations",
+          "query": "MATCH p=(:Gene)-[:cooc_wi]-(:Trait)\nRETURN count(p)",
+          "width": 5,
+          "height": 2,
+          "x": 7,
+          "y": 7,
+          "type": "value",
+          "selection": {},
+          "settings": {
+            "nodePositions": {},
+            "textAlign": "center",
+            "verticalAlign": "middle",
+            "color": "blue"
+          }
+        },
+        {
+          "title": "Edge types and counts for Trait nodes",
+          "query": "MATCH (n:Trait)-[r]-()\nRETURN distinct type(r) as Edge_Types, count(r) as Edge_count\nORDER BY Edge_count DESC\n\n\n",
+          "width": 6,
+          "height": 3,
+          "x": 5,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Number of Trait nodes with \"cooccurs_with\" relations vs not",
+          "query": "MATCH (n:Trait)\nRETURN EXISTS((:Gene)-[:cooc_wi]-(n)) AS is_cooccurs_with_present, count(*) AS count\n\n//MATCH (n:Trait)\n//WHERE NOT (:Gene)-[:cooc_wi]-(n)\n//RETURN count(n)\n\n\n",
+          "width": 7,
+          "height": 2,
+          "x": 0,
+          "y": 7,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Trait Pathways (starting with the chosen gene TAX ID)",
+          "query": "MATCH path = (m:Gene) - [r:cooc_wi] - (n:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:has_mutant] -> (n1:SNP) - [r2:associated_with] -> (n2:Phenotype) - [r3:part_of] -> (n3:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_mutant] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:has_variation] -> (n1:SNP) - [r2:associated_with] -> (n2:Phenotype) - [r3:part_of] -> (n3:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog] - (n1:Gene) - [r2:cooc_wi] - (n2:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:regulates] - (n1:Gene) - [r2:cooc_wi] - (n2:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:regulates] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:genetic] - (n1:Gene) - [r2:cooc_wi] - (n2:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:genetic] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:physical] - (n1:Gene) - [r2:cooc_wi] - (n2:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:physical] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog] - (n1:Gene) - [r2:has_mutant] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog] - (:Gene) - [:has_mutant] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog] - (n1:Gene) - [r2:has_variation] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:regulates] - (n1:Gene) - [r2:has_mutant] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:regulates] - (:Gene) - [:has_mutant] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:regulates] - (n1:Gene) - [r2:has_variation] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:regulates] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:genetic] - (n1:Gene) - [r2:has_mutant] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:genetic] - (:Gene) - [:has_mutant] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:genetic] - (n1:Gene) - [r2:has_variation] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:genetic] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:physical] - (n1:Gene) - [r2:has_mutant] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:physical] - (:Gene) - [:has_mutant] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:physical] - (n1:Gene) - [r2:has_variation] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:physical] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s] - (protein_10b:Protein) - [cooc_wi_10_21:cooc_wi] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s] - (:Protein) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) - [cooc_wi_10_21:cooc_wi] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:xref] - (protein_10b:Protein) - [cooc_wi_10_21:cooc_wi] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:xref] - (:Protein) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_211_d:associated_with] -> (pheno:Phenotype) - [part_of_211_21:part_of] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [cooc_wi_9_21:cooc_wi] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic] - (gene_9b:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_211_d:associated_with] -> (pheno:Phenotype) - [part_of_211_21:part_of] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(Gene) - [enc] -> (Protein) - [ortho] - (Protein) <- [enc] - (Gene) - [genetic] - (Gene) - [has_variation] -> (SNP) - [associated_with] -> (Phenotype) - [part_of] - (Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:physical] - (gene_9b:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_211_d:associated_with] -> (pheno:Phenotype) - [part_of_211_21:part_of] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(Gene) - [enc] -> (Protein) - [ortho] - (Protein) <- [enc] - (Gene) - [physical] - (Gene) - [has_variation] -> (SNP) - [associated_with] -> (Phenotype) - [part_of] - (Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic] - (gene_9b:Gene) - [cooc_wi_9_21:cooc_wi] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:physical] - (gene_9b:Gene) - [cooc_wi_9_21:cooc_wi] - (trait_21:Trait)\nWHERE gene_1.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:physical] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count",
+          "width": 12,
+          "height": 7,
+          "x": 0,
+          "y": 11,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "columnWidths": "[6,1]",
+            "allowDownload": true,
+            "styleRules": [
+              {
+                "field": "",
+                "condition": "=",
+                "value": "",
+                "customization": "row color",
+                "customizationValue": "black"
+              }
+            ]
+          }
+        },
+        {
+          "title": "Choose Gene TAX ID",
+          "query": "MATCH (n:`Gene`) \nWHERE toLower(toString(n.`TAXID`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`TAXID` as value LIMIT 5",
+          "width": 5,
+          "height": 2,
+          "x": 5,
+          "y": 9,
+          "type": "select",
+          "selection": {},
+          "settings": {
+            "type": "Node Property",
+            "entityType": "Gene",
+            "manualPropertyNameSpecification": true,
+            "propertyType": "TAXID",
+            "parameterName": "neodash_gene_taxid"
+          }
+        },
+        {
+          "title": "Gene TAX IDs",
+          "query": "Tax ID\t|\tTax Name\n\n3702\t|\tArabidopsis thaliana\n\n4513\t|\tHordeum vulgare (barley)\n\n15368\t|\tBrachypodium distachyon (brome)\n\n4565\t|\tTriticum aestivum (wheat)\n\n4577\t|\tZea mays (maize)\n\n4530\t|\tOryza sativa (rice)",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 9,
+          "type": "text",
+          "selection": {},
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "title": "Literature",
+      "reports": [
+        {
+          "title": "Count of pub_in relations per TAXID",
+          "query": "MATCH (n)-[r:pub_in]-()\nRETURN distinct n.TAXID as TAXID, count(r) as pub_in_Edge_count\nORDER BY pub_in_Edge_count DESC",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Count of occ_in relations per TAXID",
+          "query": "MATCH (n)-[r:occ_in]-()\nRETURN distinct n.TAXID as TAXID, count(r) as occ_in_Edge_count\nORDER BY occ_in_Edge_count DESC",
+          "width": 5,
+          "height": 2,
+          "x": 5,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Summary of Publication nodes and properties",
+          "query": "MATCH (n:Publication)\nRETURN n.prefName as PMID, n.JOURNAL_REF as Journal_Refrence, n.AbstractHeader as Abstarct_Header, n.AUTHORS as Authors, n.YEAR as Year\nLIMIT 25",
+          "width": 11,
+          "height": 3,
+          "x": 0,
+          "y": 2,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Number of Publications Per Journal",
+          "query": "MATCH (n:Publication)\nRETURN distinct n.JOURNAL_REF as Journal_Refrence, count (n) as Publications_count\nORDER BY Publications_count DESC",
+          "width": 6,
+          "height": 3,
+          "x": 0,
+          "y": 5,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "Number of Publications per Year",
+          "query": "MATCH (n:Publication)\nRETURN toInteger(n.YEAR) as Year, COUNT(*) as Total\nORDER BY Year\n\n\n",
+          "width": 6,
+          "height": 3,
+          "x": 6,
+          "y": 5,
+          "type": "line",
+          "selection": {
+            "x": "Year",
+            "value": [
+              "Total"
+            ]
+          },
+          "settings": {
+            "nodePositions": {},
+            "colors": "paired",
+            "labelRotation": 90,
+            "barValues": false,
+            "pointSize": 5,
+            "marginLeft": 70,
+            "marginTop": 50,
+            "marginRight": 70
+          }
+        },
+        {
+          "title": "",
+          "query": "MATCH (n:Publication)\nWITH distinct n.YEAR as Year, count(n) as Publications_count\nWHERE Publications_count > 20\nRETURN Year, Publications_count\nORDER BY Year\n\n\n",
+          "width": 4,
+          "height": 2,
+          "x": 7,
+          "y": 8,
+          "type": "pie",
+          "selection": {
+            "index": "Year",
+            "value": "Publications_count",
+            "key": "(none)"
+          },
+          "settings": {
+            "nodePositions": {},
+            "colors": "set2",
+            "marginTop": 50,
+            "marginBottom": 50
+          }
+        },
+        {
+          "title": "Number of Publications per Year",
+          "query": "MATCH (n:Publication)\nRETURN n.YEAR as Year, COUNT(*) as Total\nORDER BY Year\n\n\n",
+          "width": 7,
+          "height": 2,
+          "x": 0,
+          "y": 8,
+          "type": "bar",
+          "selection": {
+            "index": "Year",
+            "value": "Total",
+            "key": "(none)"
+          },
+          "settings": {
+            "nodePositions": {},
+            "labelRotation": 90,
+            "colors": "paired"
+          }
+        }
+      ]
+    },
+    {
+      "title": "KG Developers",
+      "reports": [
+        {
+          "title": "occ_in relations",
+          "query": "MATCH p=()-[r:occ_in]->() RETURN p LIMIT 10\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "graph",
+          "selection": {
+            "Concept": "prefName",
+            "Resource": "prefName",
+            "Gene": "prefName",
+            "Publication": "prefName"
+          },
+          "settings": {
+            "nodePositions": {},
+            "relationshipParticles": false
+          }
+        },
+        {
+          "title": "cooc_wi relations",
+          "query": "MATCH p=()-[r:cooc_wi]->() RETURN p LIMIT 25\n\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 5,
+          "y": 0,
+          "type": "graph",
+          "selection": {
+            "Concept": "(label)",
+            "Resource": "prefName",
+            "Gene": "prefName",
+            "Trait": "prefName"
+          },
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "dataSource relations",
+          "query": "MATCH p=()-[r:dataSource]->() RETURN p LIMIT 25\n\n\n",
+          "width": 5,
+          "height": 2,
+          "x": 0,
+          "y": 2,
+          "type": "graph",
+          "selection": {
+            "Concept": "(label)",
+            "Publication": "(label)",
+            "Resource": "prefName",
+            "DataSource": "label"
+          },
+          "settings": {
+            "nodePositions": {}
+          }
+        },
+        {
+          "title": "number of Gene-[cooc_wi]-Trait relations",
+          "query": "MATCH p=(:Gene)-[:cooc_wi]-(:Trait)\nRETURN count(p)",
+          "width": 5,
+          "height": 2,
+          "x": 5,
+          "y": 2,
+          "type": "value",
+          "selection": {},
+          "settings": {
+            "nodePositions": {},
+            "textAlign": "center",
+            "verticalAlign": "middle",
+            "color": "blue"
+          }
+        },
+        {
+          "title": "Cooccurrence - Publications",
+          "query": "MATCH ()-[r:cooc_wi]->()\nRETURN toFloat(r.CoCitNum) as CoCitNum, COUNT(*) as Total\nORDER BY CoCitNum\n\n\n",
+          "width": 10,
+          "height": 2,
+          "x": 0,
+          "y": 4,
+          "type": "line",
+          "selection": {
+            "x": "CoCitNum",
+            "value": [
+              "Total"
+            ]
+          },
+          "settings": {
+            "nodePositions": {},
+            "colors": "paired",
+            "pointSize": 5,
+            "marginLeft": 70,
+            "marginRight": 60,
+            "marginTop": 40
+          }
+        },
+        {
+          "title": "Cooccurrence - Sentences",
+          "query": "MATCH ()-[r:cooc_wi]->()\nRETURN toFloat(r.CoSenNum) as CoSenNum, COUNT(*) as Total\nORDER BY CoSenNum\n\n\n",
+          "width": 10,
+          "height": 2,
+          "x": 0,
+          "y": 6,
+          "type": "line",
+          "selection": {
+            "x": "CoSenNum",
+            "value": [
+              "Total"
+            ]
+          },
+          "settings": {
+            "nodePositions": {},
+            "colors": "paired",
+            "pointSize": 5,
+            "marginLeft": 70,
+            "marginRight": 60,
+            "marginTop": 40
+          }
+        },
+        {
+          "title": "Inner product of TFIDF",
+          "query": "MATCH ()-[r:cooc_wi]->()\nRETURN toFloat(r.IP_TFIDF) as IP_TFIDF, COUNT(*) as Total\nORDER BY IP_TFIDF\n\n\n",
+          "width": 10,
+          "height": 2,
+          "x": 0,
+          "y": 8,
+          "type": "line",
+          "selection": {
+            "x": "IP_TFIDF",
+            "value": [
+              "Total"
+            ]
+          },
+          "settings": {
+            "nodePositions": {},
+            "colors": "paired",
+            "pointSize": 5,
+            "marginLeft": 70,
+            "marginRight": 60,
+            "marginTop": 40
+          }
+        },
+        {
+          "title": "Maximum of TFIDF",
+          "query": "MATCH ()-[r:cooc_wi]->()\nRETURN toFloat(r.MAX_TFIDF) as MAX_TFIDF, COUNT(*) as Total\n//RETURN r.MAX_TFIDF as MAX_TFIDF, COUNT(*) as Total\nORDER BY MAX_TFIDF\n\n\n",
+          "width": 10,
+          "height": 2,
+          "x": 0,
+          "y": 10,
+          "type": "line",
+          "selection": {
+            "x": "MAX_TFIDF",
+            "value": [
+              "Total"
+            ]
+          },
+          "settings": {
+            "nodePositions": {},
+            "colors": "paired",
+            "pointSize": 5,
+            "marginLeft": 70,
+            "marginRight": 60,
+            "marginTop": 40
+          }
+        }
+      ]
+    },
+    {
+      "title": "Pathways",
+      "reports": [
+        {
+          "title": "\"CORE SPECIES\" Cypher pathways used in KnetMiner search",
+          "query": "// gene-[..]\nMATCH path = (m:Gene) - [r:enc] -> (n:Protein)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:homoeolog|regulates|genetic|physical] - (n:Gene)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:pub_in] -> (n:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:occ_in] -> (n:Publication)\nWITH count(path) AS count\nRETURN  \"(:Gene) - [:occ_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:cooc_wi] - (n:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:has_function] -> (n:MolFunc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_function] -> (:MolFunc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:located_in] -> (n:CelComp)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:located_in] -> (:CelComp)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:participates_in] -> (n:BioProc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:participates_in] -> (:BioProc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:has_observ_pheno] -> (n:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_observ_pheno] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:part_of] -> (n:Path)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:part_of] -> (:Path)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:inv_in] -> (n:Reaction)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:inv_in] -> (:Reaction)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:has_mutant|has_variation] -> (n1:SNP) - [r2:associated_with] -> (n2:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:has_mutant|has_variation] -> (n1:SNP) - [r2:associated_with] -> (n2:Phenotype) - [r3:part_of] -> (n3:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:has_mutant|has_variation] -> (n1:SNP) - [r2:associated_with] -> (n2:Phenotype) - [r3:pub_in] -> (n3:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:has_mutant|has_variation] -> (n1:SNP) - [r2:leads_to] -> (n2:SNPEffect)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:leads_to] -> (:SNPEffect)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:part_of] -> (n1:CoExpCluster) - [r2:part_of] -> (n2:CoExpStudy)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:part_of] -> (:CoExpCluster) - [:part_of] -> (:CoExpStudy)\" AS pathway, count\n\n//add pvalue filter to reduce hits in gene-cluster-GO/PO\nUNION ALL\nMATCH path = (m:Gene) - [r1:part_of] -> (n1:CoExpCluster) - [r2:enriched_for] -> (n2:BioProc)\nWHERE toFloat(r2.p_adjust)<1E-10\nWITH count(path) AS count\nRETURN \"(:Gene) - [:part_of] -> (:CoExpCluster) - [:enriched_for] -> (:BioProc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:part_of] -> (n1:CoExpCluster) - [r2:enriched_for] -> (n2:PlantOntologyTerm)\nWHERE toFloat(r2.over_represented_padj)<1E-3\nWITH count(path) AS count\nRETURN \"(:Gene) - [:part_of] -> (:CoExpCluster) - [:enriched_for] -> (:PlantOntologyTerm)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r:differentially_expressed] -> (n:DGES)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:differentially_expressed] -> (:DGES)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:differentially_expressed] -> (n1:DGES) - [r2:enriched_for] -> (n2:BioProc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:differentially_expressed] -> (:DGES) - [:enriched_for] -> (:BioProc)\" AS pathway, count\n\n// gene-gene-[..]\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:pub_in] -> (n2:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:occ_in] -> (n2:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:occ_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:cooc_wi] - (n2:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:has_function] -> (n2:MolFunc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:has_function] -> (:MolFunc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:located_in] -> (n2:CelComp)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:located_in] -> (:CelComp)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:participates_in] -> (n2:BioProc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:participates_in] -> (:BioProc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:has_observ_pheno] -> (n2:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:has_observ_pheno] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:part_of] -> (n2:Path)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:part_of] -> (:Path)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:inv_in] -> (n2:Reaction)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:inv_in] -> (:Reaction)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:has_mutant|has_variation] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:has_mutant|has_variation] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:part_of] -> (n4:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] -> (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:has_mutant|has_variation] -> (n2:SNP) - [r3:associated_with] -> (n3:Phenotype) - [r4:pub_in] -> (n4:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [r1:homoeolog|regulates|genetic|physical] - (n1:Gene) - [r2:has_mutant|has_variation] -> (n2:SNP) - [r3:leads_to] -> (n3:SNPEffect)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:homoeolog|regulates|genetic|physical] - (:Gene) - [:has_mutant|has_variation] -> (:SNP) - [:leads_to] -> (:SNPEffect)\" AS pathway, count",
+          "width": 12,
+          "height": 9,
+          "x": 0,
+          "y": 0,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "columnWidths": "[5,1]",
+            "allowDownload": true,
+            "transposed": false
+          }
+        },
+        {
+          "title": "\"PROTEIN ANNOTATION & HOMOLOGY\" Cypher pathways used in KnetMiner search",
+          "query": "// gene-protein-(protein)-annotation\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_7:Protein)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [pub_in_10_2_d:pub_in] -> (publication_2:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [has_function_10_3_d:has_function] -> (molFunc_3:MolFunc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:has_function] -> (:MolFunc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [participates_in_10_4_d:participates_in] -> (bioProc_4:BioProc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:participates_in] -> (:BioProc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [located_in_10_5_d:located_in] -> (celComp_5:CelComp)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:located_in] -> (:CelComp)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [cooc_wi_10_21:cooc_wi] - (trait_21:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:cooc_wi] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [rel_xref:xref] - (protein_11:Protein)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:xref] - (:Protein)\" AS pathway, count",
+          "width": 12,
+          "height": 3,
+          "x": 0,
+          "y": 9,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "nodePositions": {},
+            "columnWidths": "[5,1]",
+            "allowDownload": true
+          }
+        },
+        {
+          "title": "\"PROTEIN ANNOTATION & HOMOLOGY\" Cypher pathways used in KnetMiner search",
+          "query": "// gene-protein-(protein)-enzyme-pathway\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [is_a_10_177_d:is_a] -> (enzyme_177:Enzyme)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:is_a] -> (:Enzyme)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [is_a_10_17_d:is_a] -> (enzyme_17:Enzyme) - [ca_by_17_188_d:ca_by] -> (reaction_188:Reaction)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:is_a] -> (:Enzyme) - [:ca_by] -> (:Reaction)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [is_a_10_17_d:is_a] -> (enzyme_17:Enzyme) - [ca_by_17_18_d:ca_by] -> (reaction_18:Reaction) - [part_of_18_19_d:part_of] -> (path_19:Path)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:is_a] -> (:Enzyme) - [:ca_by] -> (:Reaction) - [:part_of] -> (:Path)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [cat_c_10_12_d:cat_c] -> (eC_12:EC) - [equ_12_3:equ] - (molFunc_3:MolFunc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:cat_c] -> (:EC) - [:equ] - (:MolFunc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [cat_c_10_15_d:cat_c] -> (eC_15:EC)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:cat_c] -> (:EC)\" AS pathway, count\n\n// gene-protein-(protein)-domains\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [has_domain_10_14_d:has_domain] -> (protDomain_14:ProtDomain)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:has_domain] -> (:ProtDomain)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [has_domain_10_11_d:has_domain] -> (protDomain_11:ProtDomain) - [participates_in_11_4_d:participates_in] -> (bioProc_4:BioProc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:has_domain] -> (:ProtDomain) - [:participates_in] -> (:BioProc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [has_domain_10_11_d:has_domain] -> (protDomain_11:ProtDomain) - [located_in_11_5_d:located_in] -> (celComp_5:CelComp)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:has_domain] -> (:ProtDomain) - [:located_in] -> (:CelComp)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:h_s_s|ortho|xref*0..1] - (protein_10b:Protein) - [has_domain_10_11_d:has_domain] -> (protDomain_11:ProtDomain) - [has_function_11_3_d:has_function] -> (molFunc_3:MolFunc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:has_domain] -> (:ProtDomain) - [:has_function] -> (:MolFunc)\" AS pathway, count\n\n// gene-protein-protein-gene-[..]\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_8_d:enc] - (gene_8:Gene)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_21_d:associated_with] -> (pheno:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_211_d:associated_with] -> (pheno:Phenotype) - [part_of_211_21:part_of] - (trait_21:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:part_of] - (:Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_211_d:associated_with] -> (pheno:Phenotype) - [pub_in_211_2_d:pub_in] -> (publication_2:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [leads_to_20_26_d:leads_to] -> (sNPEffect_26:SNPEffect)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:has_variation] -> (:SNP) - [:leads_to] -> (:SNPEffect)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [has_observ_pheno_9_13_d:has_observ_pheno] -> (phenotype_13:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:has_observ_pheno] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [participates_in_9_4_d:participates_in] -> (bioProc_4:BioProc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:participates_in] -> (:BioProc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [located_in_9_5_d:located_in] -> (celComp_5:CelComp)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:located_in] -> (:CelComp)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [pub_in_9_2_d:pub_in] -> (publication_2:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [has_function_9_3_d:has_function] -> (molFunc_3:MolFunc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [cooc_wi_9_21:cooc_wi] - (trait_21:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count",
+          "width": 12,
+          "height": 6,
+          "x": 0,
+          "y": 12,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "columnWidths": "[5,1]",
+            "allowDownload": true
+          }
+        },
+        {
+          "title": "\"PROTEIN ANNOTATION & HOMOLOGY\" Cypher pathways used in KnetMiner search",
+          "query": "// gene-protein-protein-gene-gene-[..]\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_8_d:enc] - (gene_8:Gene)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_21_d:associated_with] -> (pheno:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:has_variation] -> (:SNP) - [:associated_with] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_211_d:associated_with] -> (pheno:Phenotype) - [part_of_211_21:part_of] - (trait_21:Trait)\nWITH count(path) AS count\nRETURN \"(Gene) - [enc] -> (Protein) - [ortho] - (Protein) <- [enc] - (Gene) - [genetic|physical] - (Gene) - [has_variation] -> (SNP) - [associated_with] -> (Phenotype) - [part_of] - (Trait)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [associated_with_20_211_d:associated_with] -> (pheno:Phenotype) - [pub_in_211_2_d:pub_in] -> (publication_2:Publication)\nWITH count(path) AS count\nRETURN \"(Gene) - [enc] -> (Protein) - [ortho] - (Protein) <- [enc] - (Gene) - [genetic|physical] - (Gene) - [has_variation] -> (SNP) - [associated_with] -> (Phenotype) - [pub_in] -> (Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [has_variation_9_20_d:has_variation] -> (sNP_20:SNP) - [leads_to_20_26_d:leads_to] -> (sNPEffect_26:SNPEffect)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:has_variation] -> (:SNP) - [:leads_to] -> (:SNPEffect)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [has_observ_pheno_9_13_d:has_observ_pheno] -> (phenotype_13:Phenotype)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:has_observ_pheno] -> (:Phenotype)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [participates_in_9_4_d:participates_in] -> (bioProc_4:BioProc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:participates_in] -> (:BioProc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [located_in_9_5_d:located_in] -> (celComp_5:CelComp)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:located_in] -> (:CelComp)\" AS pathway, count\n\n//caution this is a slow query\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [pub_in_9_2_d:pub_in] -> (publication_2:Publication)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:pub_in] -> (:Publication)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [has_function_9_3_d:has_function] -> (molFunc_3:MolFunc)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:has_function] -> (:MolFunc)\" AS pathway, count\n\nUNION ALL\nMATCH path = (gene_1:Gene) - [enc_1_10_d:enc] -> (protein_10:Protein) - [rel_10_10:ortho] - (protein_10b:Protein) <- [enc_10_9_d:enc] - (gene_9:Gene) - [rel_9_9_2:genetic|physical] - (gene_9b:Gene) - [cooc_wi_9_21:cooc_wi] - (trait_21:Trait)\nWITH count(path) AS count\nRETURN \"(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:cooc_wi] - (:Trait)\" AS pathway, count",
+          "width": 12,
+          "height": 4,
+          "x": 0,
+          "y": 18,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "allowDownload": true,
+            "columnWidths": "[6,1]"
+          }
+        }
+      ]
+    }
+  ],
+  "parameters": {}
+}
