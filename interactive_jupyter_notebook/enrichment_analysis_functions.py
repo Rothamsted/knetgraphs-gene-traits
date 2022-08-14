@@ -244,7 +244,8 @@ def get_database_csv(taxID, database):
     dframe_GeneTrait['Network URL'] = urls
 
     # get CSV download link for the dataframe
-    display(create_download_link(dframe_GeneTrait, f'GeneTraitTable_{taxID}.csv', f'Download GeneTraitTable_{taxID}.csv file'))
+    csv_link = create_download_link(dframe_GeneTrait, f'GeneTraitTable_{taxID}.csv', f'Download GeneTraitTable_{taxID}.csv file')
+    display(csv_link)
 
 
 # Get the differentially expressed genes in the study
