@@ -285,7 +285,7 @@ def get_study_DEXgenes(studyAcc):
     final_result_study = flatten(final_result_study)
     total_DEXgenes = set(final_result_study)
 
-    print(" Number of genes in study is: " + str(len(total_DEXgenes)))
+    print("Number of genes in study is: " + str(len(total_DEXgenes)))
     return total_DEXgenes
 
 
@@ -390,13 +390,25 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     # update the dataframe index
     df_Ftest_sorted = df_Ftest_sorted.reset_index(drop=True)
 
-    ### create download links for final tables ###
-    display(create_download_link(df_Ftest_sorted, "enrichment_table.csv", "Download enrichment table CSV file"))
+    ### create download links for final tables and show first 10 rows of each table ###
+
+    # gene-trait table:
+    print("\nThe gene-trait table below has " + str(dframe_GeneTrait_filtered.shape[0]) + " rows.\nTo view the whole table click on the download link below:")
     display(create_download_link(dframe_GeneTrait_filtered, "GeneTrait_filtered_table.csv", "Download gene-trait table CSV file"))
 
-    ### show trait enrichment table ###
-    print("\n Trait Enrichment Table:")
-    display(df_Ftest_sorted)
+    # copy the head of the dataframe to avoid editing and changing data type of the original
+    df_GeneTrait_filtered = dframe_GeneTrait_filtered[:].copy()
+    df_GeneTrait_filtered = df_GeneTrait_filtered.head(10)
+    # display gene-trait table by rendering the HTML to clickable
+    s = "View Network"
+    df_GeneTrait_filtered['Network URL'] = df_GeneTrait_filtered['Network URL'].apply(lambda x: f'<a href="{x}">{s}</a>')
+    display(HTML(df_GeneTrait_filtered.to_html(render_links=True, escape=False)))
+
+    # Trait enrichment table:
+    print("\nThe trait enrichment table below has " + str(df_Ftest_sorted.shape[0]) + " rows.\nTo view the whole table click on the download link below:")
+    display(create_download_link(df_Ftest_sorted, "trait_enrichment_table.csv", "Download trait enrichment table CSV file"))
+    display(df_Ftest_sorted.head(10))
+
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
     
