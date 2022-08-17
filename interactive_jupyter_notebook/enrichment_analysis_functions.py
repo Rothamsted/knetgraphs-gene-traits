@@ -246,6 +246,8 @@ def get_database_csv(taxID, database):
     # get CSV download link for the dataframe
     csv_link = create_download_link(dframe_GeneTrait, f'GeneTraitTable_{taxID}.csv', f'Download GeneTraitTable_{taxID}.csv file')
     display(csv_link)
+    
+    return csv_link
 
 
 # Get the differentially expressed genes in the study
@@ -408,7 +410,6 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     print("\nThe trait enrichment table below has " + str(df_Ftest_sorted.shape[0]) + " rows.\nTo view the whole table click on the download link below:")
     display(create_download_link(df_Ftest_sorted, "trait_enrichment_table.csv", "Download trait enrichment table CSV file"))
     display(df_Ftest_sorted.head(10))
-
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
     
