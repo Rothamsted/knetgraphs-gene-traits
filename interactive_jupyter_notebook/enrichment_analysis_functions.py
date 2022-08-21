@@ -246,7 +246,7 @@ def get_database_csv(taxID, database):
     # get CSV download link for the dataframe
     csv_link = create_download_link(dframe_GeneTrait, f'GeneTraitTable_{taxID}.csv', f'Download GeneTraitTable_{taxID}.csv file')
     display(csv_link)
-    
+
     return csv_link
 
 
@@ -391,11 +391,13 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
 
     # update the dataframe index
     df_Ftest_sorted = df_Ftest_sorted.reset_index(drop=True)
+    
 
     ### create download links for final tables and show first 10 rows of each table ###
 
     # gene-trait table:
-    print("\nThe gene-trait table below has " + str(dframe_GeneTrait_filtered.shape[0]) + " rows.\nTo view the whole table click on the download link below:")
+    print("\nThe gene-trait table below has " + str(dframe_GeneTrait_filtered.shape[0]) +
+    " rows.\nTo view the whole table see the ""View whole tables section"" or click on the download link below:")
     display(create_download_link(dframe_GeneTrait_filtered, "GeneTrait_filtered_table.csv", "Download gene-trait table CSV file"))
 
     # copy the head of the dataframe to avoid editing and changing data type of the original
@@ -407,7 +409,8 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     display(HTML(df_GeneTrait_filtered.to_html(render_links=True, escape=False)))
 
     # Trait enrichment table:
-    print("\nThe trait enrichment table below has " + str(df_Ftest_sorted.shape[0]) + " rows.\nTo view the whole table click on the download link below:")
+    print("\nThe trait enrichment table below has " + str(df_Ftest_sorted.shape[0]) +
+    " rows.\nTo view the whole table see the ""View whole tables section"" or click on the download link below:")
     display(create_download_link(df_Ftest_sorted, "trait_enrichment_table.csv", "Download trait enrichment table CSV file"))
     display(df_Ftest_sorted.head(10))
 
