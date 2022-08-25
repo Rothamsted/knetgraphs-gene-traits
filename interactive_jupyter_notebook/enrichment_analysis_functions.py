@@ -327,8 +327,7 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
 
     # create dataframe to add the odd ratio and p-value
     df_Ftest = pd.DataFrame (columns = ["Trait Accession", "Trait Name", "odds ratio", "exact p-value",
-                                    "Total number of related genes in database",
-                                        "Number of related genes in user/study list"])
+                                    "Reference Genes", "User/Study Genes"])
 
     # create list to add the Trait Accessions numbers
     traits =  []
@@ -367,8 +366,7 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
             
             # 4. Add the data to the df_Ftest table
             df = {'Trait Accession': trait_acc, 'Trait Name': trait_name, 'odds ratio': oddsratio, 'exact p-value': pvalue,
-                'Total number of related genes in database': len(total_TraitGenes),
-                'Number of related genes in user/study list': a}
+                'Reference Genes': len(total_TraitGenes), 'User/Study Genes': a}
             df_Ftest = df_Ftest.append(df, ignore_index = True)
 
 
