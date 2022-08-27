@@ -1,6 +1,12 @@
-# Import SPARQLWrapper library to use the SPARQL endpoint, pandas, scipy, np, and HTML
+"""
+This module defines the functions used for
+the Enrichment Analsysis scripts using KnetMiner knowledge graphs
+"""
+
+# Import SPARQLWrapper library to use the SPARQL endpoint
 from SPARQLWrapper import SPARQLWrapper2
 
+# Import pandas, scipy, numpy and HTML
 import pandas as pd
 
 import scipy.stats as stats
@@ -10,12 +16,15 @@ import numpy as np
 import base64
 from IPython.display import HTML
 
+
 # create variable for SPARQL endpoint
 sparql = SPARQLWrapper2 ( "http://knetminer-data.cyverseuk.org/lodestar/sparql" )
 
 
 # create a function to flatten a list of lists into a single list
 def flatten(xss):
+    """This function flattens a list of lists into a single list."""
+
     return [x for xs in xss for x in xs]
 
 
@@ -23,6 +32,8 @@ def flatten(xss):
 # refrence: https://www.codegrepper.com/code-examples/python/download+csv+file+from+jupyter+notebook
 
 def create_download_link(df, filename, title):
+    """This function creates a download link to save datafarames as csv files."""
+
     csv = df.to_csv()
     b64 = base64.b64encode(csv.encode())
     payload = b64.decode()
@@ -33,6 +44,8 @@ def create_download_link(df, filename, title):
 
 # A function to create dataframe for Tax IDs and their names
 def df_taxID():
+    """This function creates a dataframe for Tax IDs and their names."""
+
     dframe_taxID = pd.DataFrame({'Tax IDs': ['4565', '3702', '4530'],
                                 'Tax Names': ['Triticum aestivum (wheat)', 'Arabidopsis thaliana (thale cress)',
                                            'Oryza sativa (rice)'],
@@ -43,6 +56,8 @@ def df_taxID():
 
 # create dataframe for evidence meaning
 def df_evidence():
+    """This function creates a dataframe for evidence meaning."""
+
     dframe_evidence = pd.DataFrame({'Evidence Code': ['TM_0-0', 'TM_0-1', 'TM_1-0', 'TM_1-1',
                                                   'GWAS_0-0', 'GWAS_0-1', 'GWAS_1-0', 'GWAS_1-1'],
                                'Evidence Type': ['Text Mining (TM)', 'Text Mining', 'Text Mining', 'Text Mining',
@@ -55,6 +70,8 @@ def df_evidence():
 
 # Create a function to get the count of genes in the database for a species tax ID.
 def get_gene_count(taxID):
+    """This function gets the count of genes in the database for a species tax ID."""
+
     query_count = """
     PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
     PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
@@ -78,6 +95,8 @@ def get_gene_count(taxID):
 
 # Create a function to get the list of studies for each species
 def get_study_list(taxID):
+    """This function gets the list of studies for each species."""
+
     query_study_list = """
     PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
     PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
@@ -119,6 +138,7 @@ def get_study_list(taxID):
 
 # Function to get all the traits related to the genes
 def get_database_csv(taxID, database):
+    """This function gets all the traits related to the genes from the database."""
     
     # Create the query
     query_subset1 = """
@@ -198,7 +218,6 @@ def get_database_csv(taxID, database):
     for pathway in pathways:
         query = query_subset1 + pathway + query_subset2
         # run the query
-        sparql = SPARQLWrapper2 ( "http://knetminer-data.cyverseuk.org/lodestar/sparql" )
         sparql.setQuery ( query )
         result = sparql.query().bindings
         result = [ [ r['geneAcc'].value, r['geneName'].value, r['traitAcc'].value, r['traitName'].value,
@@ -250,8 +269,10 @@ def get_database_csv(taxID, database):
     return csv_link
 
 
-# Get the differentially expressed genes in the study
+# Get the differentially expressed genes in a study
 def get_study_DEXgenes(studyAcc):
+    """This function gets the differentially expressed genes in a study."""
+
     query_study = """
     PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -293,6 +314,8 @@ def get_study_DEXgenes(studyAcc):
 
 # Use the study/user list of genes to extract their rows from the dframe_GeneTrait
 def get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes):
+    """This function uses the study/user list of genes to extract their rows from the dframe_GeneTrait."""
+
     # Extract the rows containg the genes list from the first dataframe (dframe_GeneTrait)
     dframe_GeneTrait_filtered = dframe_GeneTrait[dframe_GeneTrait['Gene Accession'].isin(total_DEXgenes)]
 
@@ -311,7 +334,8 @@ def get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes):
 
 # p is p-values , q is adjusted p-values
 def p_adjust_bh(p):
-    """Benjamini-Hochberg p-value correction for multiple hypothesis testing."""
+    """This function uses Benjamini-Hochberg p-value correction for multiple hypothesis testing."""
+
     p = np.asfarray(p) # Return an array converted to a float type
     by_descend = p.argsort()[::-1]
     steps = float(len(p)) / np.arange(len(p), 0, -1)
@@ -321,6 +345,7 @@ def p_adjust_bh(p):
 
 # Perform Enrichment Analysis using SciPy and calculate adjusted p-value
 def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
+    """This function performs enrichment analysis using SciPy and calculates adjusted p-value."""
 
     # get dframe_GeneTrait_filtered
     dframe_GeneTrait_filtered = get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes)
