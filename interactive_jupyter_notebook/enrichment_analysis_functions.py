@@ -68,73 +68,6 @@ def df_evidence():
     return dframe_evidence
 
 
-# Create a function to get the count of genes in the database for a species tax ID.
-def get_gene_count(taxID):
-    """This function gets the count of genes in the database for a species tax ID."""
-
-    query_count = """
-    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
-    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-    SELECT (count(*) as ?Count)
-    {
-      ?gene a bk:Gene;
-        bka:TAXID '%s'.
-    } """%(taxID)
-
-    # run the query
-    sparql.setQuery ( query_count )
-    result = sparql.query().bindings
-    result = [ [ r['Count'].value] for r in result ]
-    total_db_genes = int(result[0][0])
-    
-    print("Total Number of Genes = " + str(total_db_genes))
-    return total_db_genes
-
-
-# Create a function to get the list of studies for each species
-def get_study_list(taxID):
-    """This function gets the list of studies for each species."""
-
-    query_study_list = """
-    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
-    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX dc: <http://purl.org/dc/elements/1.1/>
-    PREFIX agri: <http://agrischemas.org/>
-    PREFIX bioschema: <http://bioschemas.org/>
-    PREFIX schema: <http://schema.org/>
-
-    SELECT DISTINCT ?studyAcc ?studyTitle
-    WHERE {
-        ?gene a bk:Gene;
-            bka:TAXID '%s'.
-
-        ?gene bioschema:expressedIn ?condition.
-
-        ?expStatement a rdfs:Statement;
-            rdf:subject ?gene;
-            rdf:predicate bioschema:expressedIn;
-            rdf:object ?condition;
-            agri:evidence ?study.
-
-        ?study
-            dc:title ?studyTitle;
-            schema:identifier ?studyAcc.
-    } """%(taxID)
-
-    # run the query
-    sparql.setQuery ( query_study_list )
-    result = sparql.query().bindings
-    final_result_study = [ [ r['studyAcc'].value, r['studyTitle'].value] for r in result ]
-
-    # Render into a table
-    dframe_study_list = pd.DataFrame ( final_result_study, columns = ["Study Accession", "Study Title"] )
-
-    return dframe_study_list
-
 
 # Function to get all the traits related to the genes
 def get_database_csv(taxID, database):
@@ -267,6 +200,74 @@ def get_database_csv(taxID, database):
     display(csv_link)
 
     return csv_link
+
+
+# Create a function to get the count of genes in the database for a species tax ID.
+def get_gene_count(taxID):
+    """This function gets the count of genes in the database for a species tax ID."""
+
+    query_count = """
+    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
+    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+    SELECT (count(*) as ?Count)
+    {
+      ?gene a bk:Gene;
+        bka:TAXID '%s'.
+    } """%(taxID)
+
+    # run the query
+    sparql.setQuery ( query_count )
+    result = sparql.query().bindings
+    result = [ [ r['Count'].value] for r in result ]
+    total_db_genes = int(result[0][0])
+    
+    print("Total Number of Genes = " + str(total_db_genes))
+    return total_db_genes
+
+
+# Create a function to get the list of studies for each species
+def get_study_list(taxID):
+    """This function gets the list of studies for each species."""
+
+    query_study_list = """
+    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
+    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    PREFIX agri: <http://agrischemas.org/>
+    PREFIX bioschema: <http://bioschemas.org/>
+    PREFIX schema: <http://schema.org/>
+
+    SELECT DISTINCT ?studyAcc ?studyTitle
+    WHERE {
+        ?gene a bk:Gene;
+            bka:TAXID '%s'.
+
+        ?gene bioschema:expressedIn ?condition.
+
+        ?expStatement a rdfs:Statement;
+            rdf:subject ?gene;
+            rdf:predicate bioschema:expressedIn;
+            rdf:object ?condition;
+            agri:evidence ?study.
+
+        ?study
+            dc:title ?studyTitle;
+            schema:identifier ?studyAcc.
+    } """%(taxID)
+
+    # run the query
+    sparql.setQuery ( query_study_list )
+    result = sparql.query().bindings
+    final_result_study = [ [ r['studyAcc'].value, r['studyTitle'].value] for r in result ]
+
+    # Render into a table
+    dframe_study_list = pd.DataFrame ( final_result_study, columns = ["Study Accession", "Study Title"] )
+
+    return dframe_study_list
 
 
 # Get the differentially expressed genes in a study
