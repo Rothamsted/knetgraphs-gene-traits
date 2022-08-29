@@ -333,7 +333,7 @@ def get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes):
 # Create a function to calculate adjusted p-values (or Q-values) using numpy
 # refrence: https://stackoverflow.com/questions/7450957/how-to-implement-rs-p-adjust-in-python
 
-# p is p-values , q is adjusted p-values
+# p is p-values, q is adjusted p-values
 def p_adjust_bh(p):
     """This function uses Benjamini-Hochberg p-value correction for multiple hypothesis testing."""
 
