@@ -346,7 +346,7 @@ def p_adjust_bh(p):
 
 # Perform Enrichment Analysis using SciPy and calculate adjusted p-value
 def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
-    """This function performs enrichment analysis using SciPy and calculates adjusted p-value."""
+    """This function performs enrichment analysis and calculates adjusted p-value."""
 
     # get dframe_GeneTrait_filtered
     dframe_GeneTrait_filtered = get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes)
