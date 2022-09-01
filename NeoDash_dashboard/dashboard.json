@@ -2,17 +2,16 @@
   "title": "KnetMiner Dashboard",
   "version": "2.1",
   "settings": {
-    "pagenumber": 1,
+    "pagenumber": 0,
     "editable": true,
     "fullscreenEnabled": true,
     "parameters": {
       "neodash_gene_iri": "http://knetminer.org/data/rdf/resources/gene_horvu1hr1g002890",
-      "neodash_gene_prefname": null,
       "neodash_person_name": "Keanu Reeves",
       "neodash_gene_protein": "Gene",
       "neodash_node_label": "Gene",
       "neodash_trait_prefname": "amylose content",
-      "neodash_gene_taxid": null
+      "neodash_gene_prefname": "XBAT31"
     },
     "downloadImageEnabled": true,
     "disableRowLimiting": true,
@@ -24,7 +23,7 @@
       "reports": [
         {
           "title": "Welcome",
-          "query": "**This is KnetMiner dashboard!** \n \nYou can click (⋮) to edit this report, or add a new report to get started. You can run any Cypher query directly from each report and render data in a variety of formats. \n \nTip: try _renaming_ this report by editing the title text. You can also edit the dashboard header at the top of the screen.\n\n[KnetMiner](https://knetminer.com/)\n\n\n\n\n",
+          "query": "**This is KnetMiner dashboard!** \n\n[KnetMiner](https://knetminer.com/) (Knowledge Network Miner) is an open-source software platform that offers access to large knowledge networks about genes, traits, diseases and more biological entities. \n\n\n\n\n",
           "width": 3,
           "height": 2,
           "x": 0,
