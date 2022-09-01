@@ -22,8 +22,8 @@
       "title": "General",
       "reports": [
         {
-          "title": "Welcome",
-          "query": "**This is KnetMiner dashboard!** \n\n[KnetMiner](https://knetminer.com/) (Knowledge Network Miner) is an open-source software platform that offers access to large knowledge networks about genes, traits, diseases and more biological entities. \n\n\n\n\n",
+          "title": "KnetMiner",
+          "query": "**This is KnetMiner dashboard!** \n\n[KnetMiner](https://knetminer.com/) (Knowledge Network Miner) is an open-source software platform that offers access to large knowledge networks about genes, traits, diseases and more biological entities.\n\nThis tab contains general reports about the nodes and edges of the Poaceae species.\n\n\n\n\n",
           "width": 3,
           "height": 2,
           "x": 0,
@@ -132,7 +132,7 @@
         {
           "title": "Edges where type is not 'dataSource'",
           "query": "MATCH ()-[r]->()\nWHERE type(r) <> 'dataSource'\nRETURN distinct type(r) as Edge_Types, count(r) as Edge_count\nORDER BY Edge_count DESC",
-          "width": 5,
+          "width": 7,
           "height": 2,
           "x": 0,
           "y": 8,
@@ -145,10 +145,10 @@
         {
           "title": "Edges where type is not dataSource, identifier",
           "query": "MATCH ()-[r]->()\nWHERE NOT (type(r) IN ['dataSource', 'identifier'])\nRETURN distinct type(r) as Edge_Types, count(r) as Edge_count\nORDER BY Edge_count DESC",
-          "width": 6,
+          "width": 8,
           "height": 2,
-          "x": 5,
-          "y": 8,
+          "x": 0,
+          "y": 10,
           "type": "table",
           "selection": {},
           "settings": {
@@ -158,10 +158,10 @@
         {
           "title": "Breakdown of Datasources and counts",
           "query": "MATCH (n:DataSource)\nRETURN distinct n.identifier as Data_Source, count(n) as Node_Count\nORDER BY Node_Count DESC",
-          "width": 5,
+          "width": 7,
           "height": 5,
           "x": 0,
-          "y": 10,
+          "y": 12,
           "type": "table",
           "selection": {},
           "settings": {
@@ -175,7 +175,7 @@
           "width": 5,
           "height": 2,
           "x": 0,
-          "y": 15,
+          "y": 22,
           "type": "graph",
           "selection": {
             "EvidenceType": "name",
@@ -212,10 +212,10 @@
         {
           "title": "number of dataSource relations per DataSource",
           "query": "MATCH (n:DataSource)-[r:dataSource]-()\nRETURN distinct n.identifier as Data_Source, count(r) as DataSource_relations_count\nORDER BY DataSource_relations_count DESC",
-          "width": 6,
+          "width": 9,
           "height": 5,
-          "x": 5,
-          "y": 10,
+          "x": 0,
+          "y": 17,
           "type": "table",
           "selection": {},
           "settings": {
@@ -227,8 +227,8 @@
           "query": "MATCH (n:DataSource)\nRETURN EXISTS((n)<-[:dataSource]-()) AS is_dataSource_present, count(*) AS count",
           "width": 6,
           "height": 2,
-          "x": 5,
-          "y": 15,
+          "x": 4,
+          "y": 24,
           "type": "table",
           "selection": {},
           "settings": {}
@@ -239,7 +239,7 @@
           "width": 4,
           "height": 2,
           "x": 0,
-          "y": 17,
+          "y": 24,
           "type": "table",
           "selection": {},
           "settings": {}
