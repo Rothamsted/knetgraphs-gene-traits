@@ -2,7 +2,7 @@
   "title": "KnetMiner Dashboard",
   "version": "2.1",
   "settings": {
-    "pagenumber": 0,
+    "pagenumber": 5,
     "editable": true,
     "fullscreenEnabled": true,
     "parameters": {
@@ -11,7 +11,8 @@
       "neodash_gene_protein": "Gene",
       "neodash_node_label": "Gene",
       "neodash_trait_prefname": "amylose content",
-      "neodash_gene_prefname": "XBAT31"
+      "neodash_gene_prefname": "XBAT31",
+      "neodash_gene_taxid": "4530"
     },
     "downloadImageEnabled": true,
     "disableRowLimiting": true,
@@ -550,7 +551,7 @@
         },
         {
           "title": "Number of Trait nodes with \"cooccurs_with\" relations vs not",
-          "query": "MATCH (n:Trait)\nRETURN EXISTS((:Gene)-[:cooc_wi]-(n)) AS is_cooccurs_with_present, count(*) AS count\n\n//MATCH (n:Trait)\n//WHERE NOT (:Gene)-[:cooc_wi]-(n)\n//RETURN count(n)\n\n\n",
+          "query": "MATCH (n:Trait)\nRETURN EXISTS((:Gene)-[:cooc_wi]-(n)) AS is_cooccurs_with_present, count(*) AS count\n\n\n",
           "width": 7,
           "height": 2,
           "x": 0,
@@ -692,45 +693,6 @@
             "marginLeft": 70,
             "marginTop": 50,
             "marginRight": 70
-          }
-        },
-        {
-          "title": "",
-          "query": "MATCH (n:Publication)\nWITH distinct n.YEAR as Year, count(n) as Publications_count\nWHERE Publications_count > 20\nRETURN Year, Publications_count\nORDER BY Year\n\n\n",
-          "width": 4,
-          "height": 2,
-          "x": 7,
-          "y": 8,
-          "type": "pie",
-          "selection": {
-            "index": "Year",
-            "value": "Publications_count",
-            "key": "(none)"
-          },
-          "settings": {
-            "nodePositions": {},
-            "colors": "set2",
-            "marginTop": 50,
-            "marginBottom": 50
-          }
-        },
-        {
-          "title": "Number of Publications per Year",
-          "query": "MATCH (n:Publication)\nRETURN n.YEAR as Year, COUNT(*) as Total\nORDER BY Year\n\n\n",
-          "width": 7,
-          "height": 2,
-          "x": 0,
-          "y": 8,
-          "type": "bar",
-          "selection": {
-            "index": "Year",
-            "value": "Total",
-            "key": "(none)"
-          },
-          "settings": {
-            "nodePositions": {},
-            "labelRotation": 90,
-            "colors": "paired"
           }
         }
       ]
