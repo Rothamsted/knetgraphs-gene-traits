@@ -12,7 +12,7 @@
       "neodash_node_label": "Gene",
       "neodash_trait_prefname": "amylose content",
       "neodash_gene_prefname": "XBAT31",
-      "neodash_gene_taxid": "4530"
+      "neodash_gene_taxid": "4565"
     },
     "downloadImageEnabled": true,
     "disableRowLimiting": true,
@@ -701,12 +701,12 @@
       "title": "KG Developers",
       "reports": [
         {
-          "title": "occ_in relations",
+          "title": "occurs_in relations",
           "query": "MATCH p=()-[r:occ_in]->() RETURN p LIMIT 10\n\n\n",
           "width": 5,
           "height": 2,
           "x": 0,
-          "y": 0,
+          "y": 2,
           "type": "graph",
           "selection": {
             "Concept": "prefName",
@@ -720,12 +720,12 @@
           }
         },
         {
-          "title": "cooc_wi relations",
+          "title": "cooccurs_with relations",
           "query": "MATCH p=()-[r:cooc_wi]->() RETURN p LIMIT 25\n\n\n\n",
           "width": 5,
           "height": 2,
           "x": 5,
-          "y": 0,
+          "y": 2,
           "type": "graph",
           "selection": {
             "Concept": "(label)",
@@ -743,7 +743,7 @@
           "width": 5,
           "height": 2,
           "x": 0,
-          "y": 2,
+          "y": 0,
           "type": "graph",
           "selection": {
             "Concept": "(label)",
@@ -758,10 +758,10 @@
         {
           "title": "number of Gene-[cooc_wi]-Trait relations",
           "query": "MATCH p=(:Gene)-[:cooc_wi]-(:Trait)\nRETURN count(p)",
-          "width": 5,
+          "width": 6,
           "height": 2,
           "x": 5,
-          "y": 2,
+          "y": 0,
           "type": "value",
           "selection": {},
           "settings": {
@@ -772,7 +772,7 @@
           }
         },
         {
-          "title": "Cooccurrence - Publications",
+          "title": "Number of Co-Occurring Citations/Publications (for cooccurs_with relation)",
           "query": "MATCH ()-[r:cooc_wi]->()\nRETURN toFloat(r.CoCitNum) as CoCitNum, COUNT(*) as Total\nORDER BY CoCitNum\n\n\n",
           "width": 10,
           "height": 2,
@@ -795,7 +795,7 @@
           }
         },
         {
-          "title": "Cooccurrence - Sentences",
+          "title": "Number of Co-Occurring Sentences (for cooccurs_with relation)",
           "query": "MATCH ()-[r:cooc_wi]->()\nRETURN toFloat(r.CoSenNum) as CoSenNum, COUNT(*) as Total\nORDER BY CoSenNum\n\n\n",
           "width": 10,
           "height": 2,
