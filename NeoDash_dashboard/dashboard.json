@@ -2,7 +2,7 @@
   "title": "KnetMiner Dashboard",
   "version": "2.1",
   "settings": {
-    "pagenumber": 5,
+    "pagenumber": 0,
     "editable": true,
     "fullscreenEnabled": true,
     "parameters": {
@@ -11,7 +11,7 @@
       "neodash_gene_protein": "Gene",
       "neodash_node_label": "Gene",
       "neodash_trait_prefname": "amylose content",
-      "neodash_gene_prefname": "XBAT31",
+      "neodash_gene_prefname": "PMAT1",
       "neodash_gene_taxid": "4565"
     },
     "downloadImageEnabled": true,
@@ -36,47 +36,12 @@
           }
         },
         {
-          "title": "",
-          "query": "MATCH (n:`Gene`) \nWHERE toLower(toString(n.`prefName`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`prefName` as value LIMIT 5",
-          "width": 3,
-          "height": 2,
-          "x": 3,
-          "y": 0,
-          "type": "select",
-          "selection": {},
-          "settings": {
-            "type": "Node Property",
-            "entityType": "Gene",
-            "propertyType": "prefName",
-            "parameterName": "neodash_gene_prefname"
-          }
-        },
-        {
-          "title": "",
-          "query": "MATCH path = (gene_1:Gene)\n  - [part_of_1_23:part_of] - (coExpCluster_23:CoExpCluster)\n  - [enriched_for_23_4:enriched_for] - (bioProc_4:BioProc)\nWHERE gene_1.prefName = $neodash_gene_prefname\nRETURN path LIMIT 10\n\n\n",
-          "width": 4,
-          "height": 2,
-          "x": 6,
-          "y": 0,
-          "type": "graph",
-          "selection": {
-            "Concept": "prefName",
-            "Resource": "prefName",
-            "Gene": "altName",
-            "CoExpCluster": "prefName",
-            "BioProc": "prefName"
-          },
-          "settings": {
-            "nodePositions": {}
-          }
-        },
-        {
           "title": "Total Node Count",
           "query": "Match (n)\nRETURN COUNT(n) as Node_count",
-          "width": 5,
+          "width": 4,
           "height": 1,
-          "x": 0,
-          "y": 2,
+          "x": 3,
+          "y": 0,
           "type": "value",
           "selection": {},
           "settings": {
@@ -89,10 +54,10 @@
         {
           "title": "Total Edge Count",
           "query": "Match (n)-[r]->()\nRETURN COUNT(r) as Edge_count",
-          "width": 5,
+          "width": 4,
           "height": 1,
-          "x": 5,
-          "y": 2,
+          "x": 3,
+          "y": 1,
           "type": "value",
           "selection": {},
           "settings": {
@@ -108,7 +73,7 @@
           "width": 5,
           "height": 5,
           "x": 0,
-          "y": 3,
+          "y": 2,
           "type": "table",
           "selection": {},
           "settings": {
@@ -123,11 +88,12 @@
           "width": 5,
           "height": 5,
           "x": 5,
-          "y": 3,
+          "y": 2,
           "type": "table",
           "selection": {},
           "settings": {
-            "nodePositions": {}
+            "nodePositions": {},
+            "allowDownload": true
           }
         },
         {
@@ -136,7 +102,7 @@
           "width": 7,
           "height": 2,
           "x": 0,
-          "y": 8,
+          "y": 7,
           "type": "table",
           "selection": {},
           "settings": {
@@ -149,7 +115,7 @@
           "width": 8,
           "height": 2,
           "x": 0,
-          "y": 10,
+          "y": 9,
           "type": "table",
           "selection": {},
           "settings": {
@@ -162,7 +128,7 @@
           "width": 7,
           "height": 5,
           "x": 0,
-          "y": 12,
+          "y": 11,
           "type": "table",
           "selection": {},
           "settings": {
@@ -176,7 +142,7 @@
           "width": 5,
           "height": 2,
           "x": 0,
-          "y": 22,
+          "y": 23,
           "type": "graph",
           "selection": {
             "EvidenceType": "name",
@@ -216,7 +182,7 @@
           "width": 9,
           "height": 5,
           "x": 0,
-          "y": 17,
+          "y": 16,
           "type": "table",
           "selection": {},
           "settings": {
@@ -224,12 +190,12 @@
           }
         },
         {
-          "title": "",
+          "title": "Number of DataSource nodes with dataSource relations vs not",
           "query": "MATCH (n:DataSource)\nRETURN EXISTS((n)<-[:dataSource]-()) AS is_dataSource_present, count(*) AS count",
-          "width": 6,
+          "width": 8,
           "height": 2,
           "x": 4,
-          "y": 24,
+          "y": 21,
           "type": "table",
           "selection": {},
           "settings": {}
@@ -240,7 +206,7 @@
           "width": 4,
           "height": 2,
           "x": 0,
-          "y": 24,
+          "y": 21,
           "type": "table",
           "selection": {},
           "settings": {}
@@ -255,8 +221,8 @@
           "query": "MATCH (g:Gene)\nRETURN distinct g.TAXID as TAXID, count (g) as Genes_count\nORDER BY Genes_count DESC",
           "width": 5,
           "height": 2,
-          "x": 5,
-          "y": 0,
+          "x": 0,
+          "y": 2,
           "type": "bar",
           "selection": {
             "index": "TAXID",
@@ -285,7 +251,7 @@
           "query": "MATCH (p:Protein)\nRETURN distinct p.TAXID as TAXID, count (p) as Protein_count\nORDER BY Protein_count DESC",
           "width": 6,
           "height": 2,
-          "x": 6,
+          "x": 5,
           "y": 2,
           "type": "pie",
           "selection": {
@@ -306,7 +272,7 @@
         {
           "title": "TAXID count",
           "query": "MATCH (g)\nWHERE g:Gene OR g:Protein\nWITH distinct labels(g) as Labs, count(g.TAXID) as total_TAXID_count, count(distinct g.TAXID) as distinct_TAXID_count\nUNWIND Labs as Labels\nWITH Labels, total_TAXID_count, distinct_TAXID_count\nWHERE Labels IN ['Gene', 'Protein']\nRETURN Labels, total_TAXID_count, distinct_TAXID_count",
-          "width": 5,
+          "width": 9,
           "height": 2,
           "x": 0,
           "y": 0,
@@ -322,13 +288,14 @@
           "width": 6,
           "height": 3,
           "x": 0,
-          "y": 2,
+          "y": 4,
           "type": "table",
           "selection": {},
           "settings": {
             "allowDownload": true,
             "columnWidths": "[1,2,2]"
-          }
+          },
+          "refreshRate": ""
         }
       ]
     },
@@ -486,11 +453,11 @@
         },
         {
           "title": "Choose Trait Name",
-          "query": "MATCH (n:`Trait`) \nWHERE toLower(toString(n.`prefName`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`prefName` as value LIMIT 5",
+          "query": "MATCH (n:`Trait`) \nWHERE toLower(toString(n.`prefName`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`prefName` as value ORDER BY size(toString(value)) ASC LIMIT 5",
           "width": 4,
           "height": 2,
-          "x": 8,
-          "y": 3,
+          "x": 0,
+          "y": 5,
           "type": "select",
           "selection": {},
           "settings": {
@@ -505,9 +472,9 @@
         {
           "title": "Genes linked to the chosen Trait",
           "query": "MATCH p=(t:Trait)--(g:Gene)\nWHERE t.prefName = $neodash_trait_prefname\nRETURN p\n\n",
-          "width": 12,
+          "width": 6,
           "height": 2,
-          "x": 0,
+          "x": 4,
           "y": 5,
           "type": "graph",
           "selection": {
