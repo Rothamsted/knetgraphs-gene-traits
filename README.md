@@ -7,3 +7,5 @@ For running the jupyter notebook for Trait Enrichment Analysis using KnetMiner S
 
 For running the jupyter notebook for gene-trait relations from the database, click on launch binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Rothamsted/knetgraphs-gene-traits/main?labpath=interactive_jupyter_notebook%2FGeneTrait_database_relations.ipynb)
+
+View the [User Manuals](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/User%20Manuals.pdf) for instructions on how to load the NeoDash dashboard and how to run the Jupyter Notebooks on local computer.
