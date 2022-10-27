@@ -2,6 +2,7 @@
 # KnetMiner_SPARQL_TEA.ipynb and GeneTrait_database_relations.ipynb
 pandas
 numpy
+matplotlib
 scipy
 sparqlwrapper
 IPython
