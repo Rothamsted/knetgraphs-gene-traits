@@ -110,7 +110,7 @@ query_StudyPvalues = """
     PREFIX bioschema: <http://bioschemas.org/>
     PREFIX schema: <http://schema.org/>
 
-    SELECT ?pvalue
+    SELECT ?pvalue ?ordinalTpm
     WHERE {
         ?gene a bk:Gene;
             dcterms:identifier ?geneAcc.
@@ -123,7 +123,9 @@ query_StudyPvalues = """
             rdf:object ?condition;
             agri:evidence ?study.
         
-        ?expStatement agri:pvalue ?pvalue.
+        { ?expStatement agri:pvalue ?pvalue. }
+        UNION
+        { ?expStatement agri:ordinalTpm ?ordinalTpm. }
 
         ?study
             dc:title ?studyTitle;

@@ -358,24 +358,59 @@ def get_StudyGeneCount(studyAcc):
     return StudyGeneCount
 
 
-# Show a histogram for the p-values of differentially expressed genes in a study
+# Show a histogram for the p-values or a bar graph for ordical TPM, for the differentially expressed genes in a study
 def get_StudyPvalues(studyAcc):
-    """This function gets the p-values for the genes in a study and plot a histogram."""
+    """This function gets the p-values for the genes in a study or their ordidinal TPM
+    and plots a histogram or a bar graph respectively."""
 
     # run the query
     sparql.setQuery (cq.query_StudyPvalues%studyAcc)
     result = sparql.query().bindings
-    StudyPvalues = [ [ r['pvalue'].value] for r in result ]
-    # flatten the list of lists into a list
-    StudyPvalues = flatten(StudyPvalues)
-    # change the string number into float
-    StudyPvalues = [float(x) for x in StudyPvalues]
-    # sort the pvalues in ascending order
-    StudyPvalues.sort(key=None, reverse=False)
 
-    # plot the p-values in a histogram using matplotlib
-    plt.hist(StudyPvalues, bins=5, edgecolor = "black")
-    plt.xlabel('p-values')
-    plt.ylabel('count')
-    plt.title('P-values Histogram', fontweight ="bold")
-    plt.show()
+    # if the study results are from Differential experiments, it will have p-values
+    if 'pvalue' in result[0]:
+        StudyPvalues = [ [ r['pvalue'].value] for r in result ]
+        # flatten the list of lists into a list
+        StudyPvalues = flatten(StudyPvalues)
+        # change the string number into float
+        StudyPvalues = [float(x) for x in StudyPvalues]
+        # sort the pvalues in ascending order
+        StudyPvalues.sort(key=None, reverse=False)
+
+        # plot the p-values in a histogram using matplotlib
+        plt.hist(StudyPvalues, edgecolor='black', bins=[0, 0.01, 0.02, 0.03, 0.04, 0.05])
+        plt.grid(axis='y', linestyle='--')
+        plt.xlabel('p-values', fontweight='bold')
+        plt.ylabel('density', fontweight='bold')
+        plt.title('P-values Histogram', fontweight='bold')
+        plt.show()
+
+    # if the study results are from Baseline experiments, it will have TPM
+    # and we want to obtain the ordinal TPM as low, medium and high
+    else:
+        StudyTPM = [ [ r['ordinalTpm'].value] for r in result ]
+        # flatten the list of lists into a list
+        StudyTPM = flatten(StudyTPM)
+        # Render into a dataframe
+        df_StudyTPM = pd.DataFrame (StudyTPM, columns = ['StudyTPM'])
+        # get the counts of the orders
+        df_StudyTPM_count = df_StudyTPM['StudyTPM'].value_counts().rename_axis('ordinalTpm').reset_index(name='counts')
+
+        from pandas.api.types import CategoricalDtype
+        # create a custom category type
+        cat_order = CategoricalDtype(['low', 'medium', 'high'], ordered=True)
+        # cast the ordinalTpm column to the custom category type
+        df_StudyTPM_count['ordinalTpm'] = df_StudyTPM_count['ordinalTpm'].astype(cat_order)
+        # sort values according to ordinalTpm
+        df_StudyTPM_count = df_StudyTPM_count.sort_values('ordinalTpm')
+
+        # plot the ordinalTpm in a bar graph using matplotlib
+        plt.bar(range(len(df_StudyTPM_count)), list(df_StudyTPM_count['counts']), align='center', edgecolor='black')
+        plt.xticks(range(len(df_StudyTPM_count)), list(df_StudyTPM_count['ordinalTpm']))
+        plt.grid(axis='y', linestyle='--')
+        plt.xlabel('\nordinal TPM', fontweight='bold')
+        plt.ylabel('counts', fontweight='bold')
+        plt.title('Ordinal TPM Bar Graph', fontweight='bold')
+        for i, v in enumerate(df_StudyTPM_count['counts']):
+            plt.text(i-0.10, v, str(v), color='red') #fontweight='bold'
+        plt.show()
