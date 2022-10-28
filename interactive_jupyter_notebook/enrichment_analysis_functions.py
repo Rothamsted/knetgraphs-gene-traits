@@ -118,7 +118,7 @@ def get_database_csv(taxID, database, concept):
     dframe_GeneTrait = dframe_GeneTrait.drop_duplicates()
     
     
-    # add the urls for the knowledge graph pathway (gene--trait)
+    # add the urls for the knowledge graph pathway (gene--concept)
     urls = []
     for x, row in dframe_GeneTrait.iterrows():
         # get Gene Accession

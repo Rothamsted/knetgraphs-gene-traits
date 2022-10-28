@@ -11,6 +11,7 @@ PREFIX bkg: <http://knetminer.org/data/rdf/resources/graphs/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
 
 SELECT *
 FROM bkg:poaceae
@@ -18,7 +19,8 @@ WHERE {
     ?gene1 a bk:Gene;
         bka:TAXID '%s';
         bk:prefName ?geneName;
-        dcterms:identifier ?geneAcc.
+        dc:identifier/dcterms:identifier ?geneAcc.
+        FILTER ( regex(?geneAcc, 'AT') )
 
 """
 
@@ -62,6 +64,9 @@ query_subset2 = """
 
     ?bioProc a bk:BioProc;
         bk:prefName ?preferredName;
-        dcterms:identifier ?ontologyTerm.
+        dc:identifier/dcterms:identifier ?ontologyTerm.
+        FILTER ( regex(?ontologyTerm, 'GO') )
+        BIND ( strafter(?ontologyTerm,":") as ?number )
+        FILTER ( regex(str(?bioProc), ?number) )
 } """
 
