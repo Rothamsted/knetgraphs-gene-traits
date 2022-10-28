@@ -9,13 +9,14 @@ import common_queries as cq
 # Import SPARQLWrapper library to use the SPARQL endpoint
 from SPARQLWrapper import SPARQLWrapper2
 
-# Import pandas, numpy, matplotlib, scipy and HTML
+# Import pandas, numpy, matplotlib, scipy, HTML, importlib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import base64
 from IPython.display import HTML
+import importlib
 
 
 # create variable for SPARQL endpoint
@@ -27,26 +28,10 @@ sparql = SPARQLWrapper2 ("http://knetminer-data.cyverseuk.org/lodestar/sparql")
 # -------------------------------------------- General Functions ------------------------------------------------------------------- #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 
-
-# create a function to flatten a list of lists into a single list
-def flatten(xss):
-    """This function flattens a list of lists into a single list."""
-
-    return [x for xs in xss for x in xs]
-
-
-# A function to create download link to save datafarames as csv files
-# refrence: https://www.codegrepper.com/code-examples/python/download+csv+file+from+jupyter+notebook
-
-def create_download_link(df, filename, title):
-    """This function creates a download link to save datafarames as csv files."""
-
-    csv = df.to_csv()
-    b64 = base64.b64encode(csv.encode())
-    payload = b64.decode()
-    html = '<a download="{filename}" href="data:text/csv;base64,{payload}" target="_blank">{title}</a>'
-    html = html.format(payload=payload,title=title,filename=filename)
-    return HTML(html)
+# A function to create list for the concepts
+def get_concepts():
+    concepts = ['Trait', 'BioProcess']
+    return concepts
 
 
 # A function to create dataframe for Tax IDs and their names
@@ -77,18 +62,39 @@ def df_evidence():
     return dframe_evidence
 
 
+# create a function to flatten a list of lists into a single list
+def flatten(xss):
+    """This function flattens a list of lists into a single list."""
+
+    return [x for xs in xss for x in xs]
+
+
+# A function to create download link to save datafarames as csv files
+# refrence: https://www.codegrepper.com/code-examples/python/download+csv+file+from+jupyter+notebook
+
+def create_download_link(df, filename, title):
+    """This function creates a download link to save datafarames as csv files."""
+
+    csv = df.to_csv()
+    b64 = base64.b64encode(csv.encode())
+    payload = b64.decode()
+    html = '<a download="{filename}" href="data:text/csv;base64,{payload}" target="_blank">{title}</a>'
+    html = html.format(payload=payload,title=title,filename=filename)
+    return HTML(html)
+
 
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 # -------------------------------------------- Function to get database files ------------------------------------------------------ #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 
 # Function to get all of the selected concept related to the genes
-def get_database_csv(taxID, database,concept_qu):
-    """This function gets all the traits related to the genes from the database."""
+def get_database_csv(taxID, database, concept):
+    """This function gets the chosen concept related to the genes from the database."""
 
-    # import the python script containing the trait queries
-    import trait_queries as concept_qu
-    
+    # import the python script containing the queries fo the concept
+    moduleName = f'{concept}_queries'
+    concept_qu = importlib.import_module(moduleName)
+
     # create an empty list to append the results of each loop
     final_result = []
 
@@ -147,8 +153,8 @@ def get_database_csv(taxID, database,concept_qu):
     dframe_GeneTrait['Network URL'] = urls
 
     # get CSV download link for the dataframe
-    csv_link = create_download_link(dframe_GeneTrait, f'GeneTraitTable_{taxID}.csv',
-                                    f'Download GeneTraitTable_{taxID}.csv file')
+    csv_link = create_download_link(dframe_GeneTrait, f'Gene{concept}Table_{taxID}.csv',
+                                    f'Download Gene{concept}Table_{taxID}.csv file')
     display(csv_link)
 
     return csv_link
