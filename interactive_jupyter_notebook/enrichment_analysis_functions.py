@@ -3,22 +3,29 @@ This module defines the functions used for
 the Enrichment Analsysis scripts using KnetMiner knowledge graphs
 """
 
+# import the python script containing the common queries
+import common_queries as cq
+
 # Import SPARQLWrapper library to use the SPARQL endpoint
 from SPARQLWrapper import SPARQLWrapper2
 
-# Import pandas, scipy, numpy and HTML
+# Import pandas, numpy, matplotlib, scipy and HTML
 import pandas as pd
-
-import scipy.stats as stats
-
 import numpy as np
-
+import matplotlib.pyplot as plt
+import scipy.stats as stats
 import base64
 from IPython.display import HTML
 
 
 # create variable for SPARQL endpoint
-sparql = SPARQLWrapper2 ( "http://knetminer-data.cyverseuk.org/lodestar/sparql" )
+sparql = SPARQLWrapper2 ("http://knetminer-data.cyverseuk.org/lodestar/sparql")
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------- General Functions ------------------------------------------------------------------- #
+# ---------------------------------------------------------------------------------------------------------------------------------- #
 
 
 # create a function to flatten a list of lists into a single list
@@ -47,10 +54,12 @@ def df_taxID():
     """This function creates a dataframe for Tax IDs and their names."""
 
     dframe_taxID = pd.DataFrame({'Tax IDs': ['4565', '3702', '4530'],
-                                'Tax Names': ['Triticum aestivum (wheat)', 'Arabidopsis thaliana (thale cress)',
-                                           'Oryza sativa (rice)'],
-                                'Database URL': ['https://knetminer.com/ws/wheatknet/', 'https://knetminer.com/ws/araknet/',
-                                    'https://knetminer.com/ws/riceknet/']})
+                                'Tax Names': ['Triticum aestivum (wheat)',
+                                            'Arabidopsis thaliana (thale cress)',
+                                            'Oryza sativa (rice)'],
+                                'Database URL': ['https://knetminer.com/ws/wheatknet/',
+                                            'https://knetminer.com/ws/araknet/',
+                                            'https://knetminer.com/ws/riceknet/']})
     return dframe_taxID
 
 
@@ -69,98 +78,35 @@ def df_evidence():
 
 
 
-# Function to get all the traits related to the genes
-def get_database_csv(taxID, database):
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------- Function to get database files ------------------------------------------------------ #
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+
+# Function to get all of the selected concept related to the genes
+def get_database_csv(taxID, database,concept_qu):
     """This function gets all the traits related to the genes from the database."""
-    
-    # Create the query
-    query_subset1 = """
-    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
-    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
-    PREFIX bkg: <http://knetminer.org/data/rdf/resources/graphs/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX dcterms: <http://purl.org/dc/terms/>
 
-    SELECT *
-    FROM bkg:poaceae
-    WHERE {
-      ?gene1 a bk:Gene;
-          bka:TAXID '%s';
-          bk:prefName ?geneName;
-          dcterms:identifier ?geneAcc.
-
-        """%(taxID)
-
-    query_subset2 = """
-
-      ?trait a bk:Trait;
-          bk:prefName ?traitName;
-          dcterms:identifier ?traitAcc.
-    } """
-
-    pathways = [
-        """?gene1 bk:cooc_wi|^bk:cooc_wi ?trait. BIND ("TM_0-0" AS ?evidence)""",
-
-        """?gene1 bk:has_variation ?snp.
-        ?snp bk:associated_with ?phenotype.
-        ?phenotype a bk:Phenotype.
-        ?phenotype bk:part_of ?trait.
-        BIND ("GWAS_0-0" AS ?evidence)""",
-
-        """{ ?gene1 bk:homoeolog|^bk:homoeolog ?gene2. BIND ("TM_1-0" AS ?evidence) }
-        UNION { ?gene1 (bk:regulates|bk:genetic|bk:physical|^bk:regulates|^bk:genetic|^bk:physical) ?gene2.
-        BIND ("TM_0-1" AS ?evidence) }
-        ?gene2 bk:cooc_wi|^bk:cooc_wi ?trait.""",
-
-        """{ ?gene1 bk:homoeolog|^bk:homoeolog ?gene2. BIND ("GWAS_1-0" AS ?evidence) }
-        UNION { ?gene1 (bk:regulates|bk:genetic|bk:physical|^bk:regulates|^bk:genetic|^bk:physical) ?gene2.
-        BIND ("GWAS_0-1" AS ?evidence) }
-        ?gene2 bk:has_variation ?snp.
-        ?snp bk:associated_with ?phenotype.
-        ?phenotype a bk:Phenotype.
-        ?phenotype bk:part_of ?trait.""",
-
-        """?gene1 bk:enc ?protein1.
-        ?protein1 (bk:h_s_s|bk:xref|^bk:h_s_s|^bk:xref) ?protein2.
-        ?protein2 bk:cooc_wi|^bk:cooc_wi ?trait.
-        BIND ("TM_1-0" AS ?evidence) """,
-
-        """?gene1 bk:enc ?protein1.
-        ?protein1 bk:ortho|^bk:ortho ?protein2.
-        ?protein2 ^bk:enc ?gene2.
-              { ?gene2 bk:cooc_wi|^bk:cooc_wi ?trait. BIND ("TM_1-0" AS ?evidence) }
-        UNION { ?gene2 (bk:genetic|bk:physical|^bk:genetic|^bk:physical) ?gene3.
-                ?gene3 bk:cooc_wi|^bk:cooc_wi ?trait. BIND ("TM_1-1" AS ?evidence) }""",
-
-        """?gene1 bk:enc ?protein1.
-        ?protein1 bk:ortho|^bk:ortho ?protein2.
-        ?protein2 ^bk:enc ?gene2.
-              { ?gene2 bk:has_variation ?snp.  BIND ("GWAS_1-0" AS ?evidence) }
-        UNION { ?gene2 (bk:genetic|bk:physical|^bk:genetic|^bk:physical) ?gene3.
-                ?gene3 bk:has_variation ?snp. BIND ("GWAS_1-1" AS ?evidence) }
-        ?snp bk:associated_with ?phenotype.
-        ?phenotype a bk:Phenotype.
-        ?phenotype bk:part_of|^bk:part_of ?trait."""]
-    
+    # import the python script containing the trait queries
+    import trait_queries as concept_qu
     
     # create an empty list to append the results of each loop
     final_result = []
 
     # loop over the pathways
-    for pathway in pathways:
-        query = query_subset1 + pathway + query_subset2
+    for pathway in concept_qu.pathways:
+        query = concept_qu.query_subset1%taxID + pathway + concept_qu.query_subset2
         # run the query
-        sparql.setQuery ( query )
+        sparql.setQuery (query)
         result = sparql.query().bindings
-        result = [ [ r['geneAcc'].value, r['geneName'].value, r['traitAcc'].value, r['traitName'].value,
-                    r['evidence'].value] for r in result ]
+        result = [ [ r['geneAcc'].value, r['geneName'].value, r['ontologyTerm'].value,
+                    r['preferredName'].value, r['evidence'].value] for r in result ]
         final_result += result
 
 
     # Render into a dataframe
-    dframe_GeneTrait = pd.DataFrame ( final_result, columns = ["Gene Accession", "Gene Name",
-                                                               "Trait Accession", "Trait Name", "Evidence"] )
+    dframe_GeneTrait = pd.DataFrame (final_result, columns = ["Gene Accession", "Gene Name",
+                                                               "Ontology Term", "Preferred Name",
+                                                               "Evidence"])
 
     # remove repeated rows
     dframe_GeneTrait = dframe_GeneTrait.drop_duplicates()
@@ -173,22 +119,27 @@ def get_database_csv(taxID, database):
         geneAcc = row['Gene Accession']
 
         # Get Trait Accession
-        traitAcc = row['Trait Accession']
-        first_trait = traitAcc.split(";")[0] # split if there are two trait accessions, and take the first accession
-        trait_split = first_trait.split("_") # split the "TO" and the accession number
-
-        # condition in case there is only accession number without "TO"
-        to = ''
-        acc = ''
-        if len(trait_split) == 2:
-            to = trait_split[0]+":"
-            acc = trait_split[1]
+        ontoTerm = row['Ontology Term']
+        # split if there are two trait accessions, and take the first accession
+        first_term = ontoTerm.split(";")[0]
+        # split the "TO" and the accession number
+        if "_" in first_term:
+            term_split = first_term.split("_")
         else:
-            acc = trait_split[0]
+            term_split = first_term.split(":")
 
-        to_acc = to + acc
+        # condition in case there is only accession number without "TO" or "GO"
+        onto = ''
+        acc = ''
+        if len(term_split) == 2:
+            onto = term_split[0]+":"
+            acc = term_split[1]
+        else:
+            acc = term_split[0]
 
-        url = f'{database}genepage?list={geneAcc}&keyword=%22{to_acc}%22'
+        onto_acc = onto + acc
+
+        url = f'{database}genepage?list={geneAcc}&keyword=%22{onto_acc}%22'
 
         urls.append(url)
         
@@ -196,29 +147,25 @@ def get_database_csv(taxID, database):
     dframe_GeneTrait['Network URL'] = urls
 
     # get CSV download link for the dataframe
-    csv_link = create_download_link(dframe_GeneTrait, f'GeneTraitTable_{taxID}.csv', f'Download GeneTraitTable_{taxID}.csv file')
+    csv_link = create_download_link(dframe_GeneTrait, f'GeneTraitTable_{taxID}.csv',
+                                    f'Download GeneTraitTable_{taxID}.csv file')
     display(csv_link)
 
     return csv_link
 
 
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------- Functions for Genes ----------------------------------------------------------------- #
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+
 # Create a function to get the count of genes in the database for a species tax ID.
 def get_gene_count(taxID):
     """This function gets the count of genes in the database for a species tax ID."""
 
-    query_count = """
-    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
-    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-    SELECT (count(*) as ?Count)
-    {
-      ?gene a bk:Gene;
-        bka:TAXID '%s'.
-    } """%(taxID)
-
     # run the query
-    sparql.setQuery ( query_count )
+    sparql.setQuery(cq.query_count_genes%taxID)
     result = sparql.query().bindings
     result = [ [ r['Count'].value] for r in result ]
     total_db_genes = int(result[0][0])
@@ -226,91 +173,6 @@ def get_gene_count(taxID):
     print("Total Number of Genes = " + str(total_db_genes))
     return total_db_genes
 
-
-# Create a function to get the list of studies for each species
-def get_study_list(taxID):
-    """This function gets the list of studies for each species."""
-
-    query_study_list = """
-    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
-    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX dc: <http://purl.org/dc/elements/1.1/>
-    PREFIX agri: <http://agrischemas.org/>
-    PREFIX bioschema: <http://bioschemas.org/>
-    PREFIX schema: <http://schema.org/>
-
-    SELECT DISTINCT ?studyAcc ?studyTitle
-    WHERE {
-        ?gene a bk:Gene;
-            bka:TAXID '%s'.
-
-        ?gene bioschema:expressedIn ?condition.
-
-        ?expStatement a rdfs:Statement;
-            rdf:subject ?gene;
-            rdf:predicate bioschema:expressedIn;
-            rdf:object ?condition;
-            agri:evidence ?study.
-
-        ?study
-            dc:title ?studyTitle;
-            schema:identifier ?studyAcc.
-    } """%(taxID)
-
-    # run the query
-    sparql.setQuery ( query_study_list )
-    result = sparql.query().bindings
-    final_result_study = [ [ r['studyAcc'].value, r['studyTitle'].value] for r in result ]
-
-    # Render into a table
-    dframe_study_list = pd.DataFrame ( final_result_study, columns = ["Study Accession", "Study Title"] )
-
-    return dframe_study_list
-
-
-# Get the differentially expressed genes in a study
-def get_study_DEXgenes(studyAcc):
-    """This function gets the differentially expressed genes in a study."""
-
-    query_study = """
-    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX dc: <http://purl.org/dc/elements/1.1/>
-    PREFIX dcterms: <http://purl.org/dc/terms/>
-    PREFIX agri: <http://agrischemas.org/>
-    PREFIX bioschema: <http://bioschemas.org/>
-    PREFIX schema: <http://schema.org/>
-
-    SELECT *
-    WHERE {
-        ?gene a bk:Gene;
-            dcterms:identifier ?geneAcc.
-
-        ?gene bioschema:expressedIn ?condition.
-
-        ?expStatement a rdfs:Statement;
-            rdf:subject ?gene;
-            rdf:predicate bioschema:expressedIn;
-            rdf:object ?condition;
-            agri:evidence ?study.
-
-        ?study
-            dc:title ?studyTitle;
-            schema:identifier '%s'.
-    } """%(studyAcc)
-
-    # run the query
-    sparql.setQuery ( query_study )
-    result = sparql.query().bindings
-    final_result_study = [ [ r['geneAcc'].value] for r in result ]
-    final_result_study = flatten(final_result_study)
-    total_DEXgenes = set(final_result_study)
-
-    print("Number of genes in study is: " + str(len(total_DEXgenes)))
-    return total_DEXgenes
 
 
 # Use the study/user list of genes to extract their rows from the dframe_GeneTrait
@@ -321,13 +183,20 @@ def get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes):
     dframe_GeneTrait_filtered = dframe_GeneTrait[dframe_GeneTrait['Gene Accession'].isin(total_DEXgenes)]
 
     # Sort dframe_GeneTrait_filtered 
-    dframe_GeneTrait_filtered = dframe_GeneTrait_filtered.sort_values(['Trait Accession', 'Gene Name', 'Evidence'],
+    dframe_GeneTrait_filtered = dframe_GeneTrait_filtered.sort_values(['Ontology Term', 'Gene Name', 'Evidence'],
                                                                     ascending = [True, True, True])
 
     # update the dataframe index
     dframe_GeneTrait_filtered = dframe_GeneTrait_filtered.reset_index(drop=True)
 
     return dframe_GeneTrait_filtered
+
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------- Functions for Enrichment Analysis --------------------------------------------------- #
+# ---------------------------------------------------------------------------------------------------------------------------------- #
 
 
 # Create a function to calculate adjusted p-values (or Q-values) using numpy
@@ -352,8 +221,8 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     dframe_GeneTrait_filtered = get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes)
 
     # create dataframe to add the odd ratio and p-value
-    df_Ftest = pd.DataFrame (columns = ["Trait Accession", "Trait Name", "odds ratio", "exact p-value",
-                                    "Reference Genes", "User/Study Genes"])
+    df_Ftest = pd.DataFrame (columns = ["Ontology Term", "Preferred Name", "odds ratio", "exact p-value",
+                                        "Reference Genes", "User/Study Genes"])
 
     # create list to add the Trait Accessions numbers
     traits =  []
@@ -361,22 +230,22 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     ### for each trait, calculate odds ratio, exact p-value and number of related genes in database and list ###
 
     for x, row in dframe_GeneTrait_filtered.iterrows():
-        trait_acc = row['Trait Accession']
+        trait_acc = row['Ontology Term']
         
         if trait_acc not in traits:
             
             traits.append(trait_acc)
-            trait_name = row['Trait Name']
+            trait_name = row['Preferred Name']
             
             # 1a. Get the complete set of genes linked to the trait in the gene list
-            select_trait = dframe_GeneTrait_filtered.loc[dframe_GeneTrait_filtered['Trait Accession'] == trait_acc]
+            select_trait = dframe_GeneTrait_filtered.loc[dframe_GeneTrait_filtered['Ontology Term'] == trait_acc]
             
             # 1b. Get the distinct list of genes linked to the trait in the gene list
             trait_DEXgenes = set(select_trait['Gene Accession'].unique())
             
             
             # 2a. Get the complete set of genes linked to the trait in the database (dframe_GeneTrait)
-            select_Totaltrait = dframe_GeneTrait.loc[dframe_GeneTrait['Trait Accession'] == trait_acc]
+            select_Totaltrait = dframe_GeneTrait.loc[dframe_GeneTrait['Ontology Term'] == trait_acc]
             
             # 2b. Get the distinct list of genes linked to the trait in dframe_GeneTrait
             total_TraitGenes = set(select_Totaltrait['Gene Accession'].unique())
@@ -391,7 +260,7 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
             oddsratio, pvalue = stats.fisher_exact(data)
             
             # 4. Add the data to the df_Ftest table
-            df = {'Trait Accession': trait_acc, 'Trait Name': trait_name, 'odds ratio': oddsratio, 'exact p-value': pvalue,
+            df = {'Ontology Term': trait_acc, 'Preferred Name': trait_name, 'odds ratio': oddsratio, 'exact p-value': pvalue,
                 'Reference Genes': len(total_TraitGenes), 'User/Study Genes': a}
             df_Ftest = df_Ftest.append(df, ignore_index = True)
 
@@ -440,3 +309,110 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
     
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+# -------------------------------------------- Functions for GXA studies ----------------------------------------------------------- #
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+
+# Create a function to get the list of studies for each species
+def get_study_list(taxID):
+    """This function gets the list of studies for each species."""
+
+    # run the query
+    sparql.setQuery (cq.query_study_list%taxID)
+    result = sparql.query().bindings
+    final_result_study = [ [ r['studyAcc'].value, r['studyTitle'].value] for r in result ]
+
+    # Render into a table
+    dframe_study_list = pd.DataFrame ( final_result_study, columns = ["Study Accession", "Study Title"] )
+
+    return dframe_study_list
+
+
+# Get the differentially expressed genes in a study
+def get_study_DEXgenes(studyAcc):
+    """This function gets the differentially expressed genes in a study."""
+
+    # run the query
+    sparql.setQuery (cq.query_DEXgenes_in_study%studyAcc)
+    result = sparql.query().bindings
+    final_result_study = [ [ r['geneAcc'].value] for r in result ]
+    final_result_study = flatten(final_result_study)
+    total_DEXgenes = set(final_result_study)
+
+    print("Number of genes in study is: " + str(len(total_DEXgenes)))
+    return total_DEXgenes
+
+
+# Get the number of differentially expressed genes in a study
+def get_StudyGeneCount(studyAcc):
+    """This function gets the count of genes in a study."""
+
+    # run the query
+    sparql.setQuery(cq.query_CountStudyGenes%studyAcc)
+    result = sparql.query().bindings
+    result = [ [ r['Count'].value] for r in result ]
+    StudyGeneCount = int(result[0][0])
+    
+    print("Total Number of Genes in study = " + str(StudyGeneCount))
+    return StudyGeneCount
+
+
+# Show a histogram for the p-values or a bar graph for ordical TPM, for the differentially expressed genes in a study
+def get_StudyPvalues(studyAcc):
+    """This function gets the p-values for the genes in a study or their ordidinal TPM
+    and plots a histogram or a bar graph respectively."""
+
+    # run the query
+    sparql.setQuery (cq.query_StudyPvalues%studyAcc)
+    result = sparql.query().bindings
+
+    # if the study results are from Differential experiments, it will have p-values
+    if 'pvalue' in result[0]:
+        StudyPvalues = [ [ r['pvalue'].value] for r in result ]
+        # flatten the list of lists into a list
+        StudyPvalues = flatten(StudyPvalues)
+        # change the string number into float
+        StudyPvalues = [float(x) for x in StudyPvalues]
+        # sort the pvalues in ascending order
+        StudyPvalues.sort(key=None, reverse=False)
+
+        # plot the p-values in a histogram using matplotlib
+        plt.hist(StudyPvalues, edgecolor='black', bins=[0, 0.01, 0.02, 0.03, 0.04, 0.05])
+        plt.grid(axis='y', linestyle='--')
+        plt.xlabel('p-values', fontweight='bold')
+        plt.ylabel('density', fontweight='bold')
+        plt.title('P-values Histogram', fontweight='bold')
+        plt.show()
+
+    # if the study results are from Baseline experiments, it will have TPM
+    # and we want to obtain the ordinal TPM as low, medium and high
+    else:
+        StudyTPM = [ [ r['ordinalTpm'].value] for r in result ]
+        # flatten the list of lists into a list
+        StudyTPM = flatten(StudyTPM)
+        # Render into a dataframe
+        df_StudyTPM = pd.DataFrame (StudyTPM, columns = ['StudyTPM'])
+        # get the counts of the orders
+        df_StudyTPM_count = df_StudyTPM['StudyTPM'].value_counts().rename_axis('ordinalTpm').reset_index(name='counts')
+
+        from pandas.api.types import CategoricalDtype
+        # create a custom category type
+        cat_order = CategoricalDtype(['low', 'medium', 'high'], ordered=True)
+        # cast the ordinalTpm column to the custom category type
+        df_StudyTPM_count['ordinalTpm'] = df_StudyTPM_count['ordinalTpm'].astype(cat_order)
+        # sort values according to ordinalTpm
+        df_StudyTPM_count = df_StudyTPM_count.sort_values('ordinalTpm')
+
+        # plot the ordinalTpm in a bar graph using matplotlib
+        plt.bar(range(len(df_StudyTPM_count)), list(df_StudyTPM_count['counts']), align='center', edgecolor='black')
+        plt.xticks(range(len(df_StudyTPM_count)), list(df_StudyTPM_count['ordinalTpm']))
+        plt.grid(axis='y', linestyle='--')
+        plt.xlabel('\nordinal TPM', fontweight='bold')
+        plt.ylabel('counts', fontweight='bold')
+        plt.title('Ordinal TPM Bar Graph', fontweight='bold')
+        for i, v in enumerate(df_StudyTPM_count['counts']):
+            plt.text(i-0.10, v, str(v), color='red') #fontweight='bold'
+        plt.show()
