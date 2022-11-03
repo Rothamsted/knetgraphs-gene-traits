@@ -13,6 +13,7 @@ SELECT (count(*) as ?Count)
     bka:TAXID '%s'.
 } """
 
+
 query_study_list = """
     PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
     PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>

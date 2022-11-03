@@ -89,7 +89,7 @@ def create_download_link(df, filename, title):
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------- #
-# ------------------------------------------------ Checkboxes Display Functions ---------------------------------------------------- #
+# ------------------------------------  Display Functions for Checkboxes and RadioButtons ------------------------------------------ #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 
 # refrence: https://stackoverflow.com/questions/57219796/ipywidgets-dynamic-creation-of-checkboxes-and-selection-of-data
@@ -100,11 +100,11 @@ def display_checkboxes(data):
     checkboxes = [widgets.Checkbox(value=False, description=label) for label in data]
     output = widgets.VBox(children=checkboxes)
     display(output)
-
+    
     return checkboxes
 
 def get_checkboxes_selection(checkboxes):
-    """This function gets the selections of checkboxes."""
+    """This function gets the selections of the checkboxes."""
 
     selected_data = []
     for i in range(0, len(checkboxes)):
@@ -114,6 +114,13 @@ def get_checkboxes_selection(checkboxes):
     return selected_data
 
 
+def display_radiobuttons(data):
+    """This function creates and displays radio buttons for a list of data."""
+
+    radiobuttons = widgets.RadioButtons(options = data, value = None)
+    display(radiobuttons)
+
+    return radiobuttons
 
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 # -------------------------------------------- Function to get database files ------------------------------------------------------ #
@@ -208,7 +215,6 @@ def get_gene_count(taxID):
     result = [ [ r['Count'].value] for r in result ]
     total_db_genes = int(result[0][0])
     
-    print("Total Number of Genes = " + str(total_db_genes))
     return total_db_genes
 
 
@@ -327,9 +333,9 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     ### create download links for final tables and show first 10 rows of each table ###
 
     # gene-trait table:
-    print("\nThe gene-trait table below has " + str(dframe_GeneTrait_filtered.shape[0]) +
+    print("\nThe gene-concept table below has " + str(dframe_GeneTrait_filtered.shape[0]) +
     " rows.\nTo view the whole table, see the 'View whole tables section' or click on the download link below:")
-    display(create_download_link(dframe_GeneTrait_filtered, "GeneTrait_filtered_table.csv", "Download gene-trait table CSV file"))
+    display(create_download_link(dframe_GeneTrait_filtered, "GeneConcept_filtered_table.csv", "Download gene-concept table CSV file"))
 
     # copy the head of the dataframe to avoid editing and changing data type of the original
     df_GeneTrait_filtered = dframe_GeneTrait_filtered[:].copy()
@@ -340,9 +346,9 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     display(HTML(df_GeneTrait_filtered.to_html(render_links=True, escape=False)))
 
     # Trait enrichment table:
-    print("\nThe trait enrichment table below has " + str(df_Ftest_sorted.shape[0]) +
+    print("\nThe enrichment table below has " + str(df_Ftest_sorted.shape[0]) +
     " rows.\nTo view the whole table, see the 'View whole tables section' or click on the download link below:")
-    display(create_download_link(df_Ftest_sorted, "trait_enrichment_table.csv", "Download trait enrichment table CSV file"))
+    display(create_download_link(df_Ftest_sorted, "enrichment_table.csv", "Download enrichment table CSV file"))
     display(df_Ftest_sorted.head(10))
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
