@@ -6,9 +6,6 @@ the Enrichment Analsysis scripts using KnetMiner knowledge graphs
 # import the python script containing the common queries
 import common_queries as cq
 
-# Import SPARQLWrapper library to use the SPARQL endpoint
-from SPARQLWrapper import SPARQLWrapper2
-
 # Import pandas, numpy, matplotlib, scipy, HTML, importlib
 import pandas as pd
 import numpy as np
@@ -22,6 +19,8 @@ import importlib
 import ipywidgets as widgets
 from ipywidgets import interact, interact_manual
 
+# Import SPARQLWrapper library to use the SPARQL endpoint
+from SPARQLWrapper import SPARQLWrapper2
 
 # create variable for SPARQL endpoint
 sparql = SPARQLWrapper2 ("http://knetminer-data.cyverseuk.org/lodestar/sparql")
