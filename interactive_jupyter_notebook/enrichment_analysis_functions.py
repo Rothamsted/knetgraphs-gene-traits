@@ -18,6 +18,10 @@ import base64
 from IPython.display import HTML
 import importlib
 
+# Import ipywidgets for interactive interface
+import ipywidgets as widgets
+from ipywidgets import interact, interact_manual
+
 
 # create variable for SPARQL endpoint
 sparql = SPARQLWrapper2 ("http://knetminer-data.cyverseuk.org/lodestar/sparql")
@@ -81,6 +85,34 @@ def create_download_link(df, filename, title):
     html = '<a download="{filename}" href="data:text/csv;base64,{payload}" target="_blank">{title}</a>'
     html = html.format(payload=payload,title=title,filename=filename)
     return HTML(html)
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+# ------------------------------------------------ Checkboxes Display Functions ---------------------------------------------------- #
+# ---------------------------------------------------------------------------------------------------------------------------------- #
+
+# refrence: https://stackoverflow.com/questions/57219796/ipywidgets-dynamic-creation-of-checkboxes-and-selection-of-data
+
+def display_checkboxes(data):
+    """This function creates and displays checkboxes for a list of data."""
+
+    checkboxes = [widgets.Checkbox(value=False, description=label) for label in data]
+    output = widgets.VBox(children=checkboxes)
+    display(output)
+
+    return checkboxes
+
+def get_checkboxes_selection(checkboxes):
+    """This function gets the selections of checkboxes."""
+
+    selected_data = []
+    for i in range(0, len(checkboxes)):
+        if checkboxes[i].value == True:
+            selected_data = selected_data + [checkboxes[i].description]
+    
+    return selected_data
+
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------- #
