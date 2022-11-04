@@ -38,7 +38,7 @@ query_study_list = """
             rdf:object ?condition;
             agri:evidence ?study.
 
-        ?study
+        ?study a bioschema:Study;
             schema:additionalProperty bkr:gxa_analysis_type_differential;
             dc:title ?studyTitle;
             schema:identifier ?studyAcc.
