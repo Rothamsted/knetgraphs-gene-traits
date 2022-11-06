@@ -1,5 +1,5 @@
 # Used by Binder in Jupyter Notebooks:
-# KnetMiner_SPARQL_TEA.ipynb and GeneTrait_database_relations.ipynb
+# KnetMiner_SPARQL_EA.ipynb and GeneConcept_database_relations.ipynb
 pandas
 numpy
 matplotlib
