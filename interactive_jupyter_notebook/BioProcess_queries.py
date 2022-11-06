@@ -19,54 +19,50 @@ WHERE {
     ?gene1 a bk:Gene;
         bka:TAXID '%s';
         bk:prefName ?geneName;
-        dc:identifier/dcterms:identifier ?geneAcc.
-        FILTER ( regex(?geneAcc, 'AT') )
+        dcterms:identifier ?geneAcc.
 
 """
 
 pathways = [
-    """?gene1 bk:participates_in ?bioProc. BIND ("" AS ?evidence)""",
+    """?gene1 bk:participates_in ?bioProc. BIND ("GO_0-0" AS ?evidence)""",
     
     """?gene1 bk:part_of ?coExpCluster.
     ?coExpCluster a bk:CoExpCluster.
     ?coExpCluster bk:enriched_for ?bioProc.
-    BIND ("" AS ?evidence)""",
+    BIND ("CoExpCluster_0-0" AS ?evidence)""",
 
     """?gene1 bk:differentially_expressed ?dGES.
     ?dGES a bk:DGES.
     ?dGES bk:enriched_for ?bioProc.
-    BIND ("" AS ?evidence)""",
+    BIND ("DGES_0-0" AS ?evidence)""",
 
-    """{ ?gene1 bk:homoeolog|^bk:homoeolog ?gene2. BIND ("" AS ?evidence) }
+    """{ ?gene1 bk:homoeolog|^bk:homoeolog ?gene2. BIND ("GO_1-0" AS ?evidence) }
     UNION { ?gene1 (bk:regulates|bk:genetic|bk:physical|^bk:regulates|^bk:genetic|^bk:physical) ?gene2.
-    BIND ("" AS ?evidence) }
+    BIND ("GO_0-1" AS ?evidence) }
     ?gene2 bk:participates_in ?bioProc.""",
 
     """?gene1 bk:enc ?protein1.
     ?protein1 (bk:h_s_s|bk:ortho|bk:xref|^bk:h_s_s|^bk:ortho|^bk:xref) ?protein2.
     ?protein2 bk:participates_in ?bioProc.
-    BIND ("" AS ?evidence) """,
+    BIND ("GO_1-0" AS ?evidence) """,
 
     """?gene1 bk:enc ?protein1.
     ?protein1 (bk:h_s_s|bk:ortho|bk:xref|^bk:h_s_s|^bk:ortho|^bk:xref) ?protein2.
     ?protein2 bk:has_domain ?protDomain.
     ?protDomain bk:participates_in ?bioProc.
-    BIND ("" AS ?evidence) """,
+    BIND ("GO_1-0" AS ?evidence) """,
 
     """?gene1 bk:enc ?protein1.
     ?protein1 bk:ortho|^bk:ortho ?protein2.
     ?protein2 ^bk:enc ?gene2.
-        { ?gene2 bk:participates_in ?bioProc. BIND ("" AS ?evidence) }
+        { ?gene2 bk:participates_in ?bioProc. BIND ("GO_1-0" AS ?evidence) }
     UNION { ?gene2 (bk:genetic|bk:physical|^bk:genetic|^bk:physical) ?gene3.
-        ?gene3 bk:participates_in ?bioProc. BIND ("" AS ?evidence) }"""]
+        ?gene3 bk:participates_in ?bioProc. BIND ("GO_1-1" AS ?evidence) }"""]
 
 query_subset2 = """
 
     ?bioProc a bk:BioProc;
         bk:prefName ?preferredName;
-        dc:identifier/dcterms:identifier ?ontologyTerm.
-        FILTER ( regex(?ontologyTerm, 'GO') )
-        BIND ( strafter(?ontologyTerm,":") as ?number )
-        FILTER ( regex(str(?bioProc), ?number) )
+        dcterms:identifier ?ontologyTerm.
 } """
 

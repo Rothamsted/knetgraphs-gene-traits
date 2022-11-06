@@ -129,7 +129,7 @@ def display_radiobuttons(data):
 def get_database_csv(taxID, database, concept):
     """This function gets the chosen concept related to the genes from the database."""
 
-    # import the python script containing the queries fo the concept
+    # import the python script containing the queries for the concept
     moduleName = f'{concept}_queries'
     concept_qu = importlib.import_module(moduleName)
 
@@ -155,36 +155,49 @@ def get_database_csv(taxID, database, concept):
     # remove repeated rows
     dframe_GeneTrait = dframe_GeneTrait.drop_duplicates()
     
+
+    ##### editing the BioProc files for multiple accession #####
+    if concept == 'BioProcess':
+        for x, row in dframe_GeneTrait.iterrows():
+
+            # edit Gene Accessions
+            geneAccs = row['Gene Accession']
+            # split if there are more than one accession, and take the first accession
+            geneAcc1 = geneAccs.split(";")[0]
+            # replace the gene accession with that one accession number
+            row['Gene Accession'] = geneAcc1
+
+            # edit Ontology Term accessions
+            ontoTerms = row['Ontology Term']
+            # split the terms
+            ontoTermsList = ontoTerms.split(";")
+            ontoTermsList.sort()
+            # replace the ontology accession with the first GO term
+            for acc in ontoTermsList:
+                if acc.startswith('GO'):
+                    row['Ontology Term'] = acc
+                    break
+    ##### END of editing the BioProc files #####
+
     
-    # add the urls for the knowledge graph pathway (gene--concept)
+    ##### add the urls for the knowledge graph pathway (gene--concept)
     urls = []
     for x, row in dframe_GeneTrait.iterrows():
         # get Gene Accession
         geneAcc = row['Gene Accession']
 
-        # Get Trait Accession
+        # Get Ontology Accession number
         ontoTerm = row['Ontology Term']
-        # split if there are two trait accessions, and take the first accession
+        # split if there are more than one accession, and take the first accession
         first_term = ontoTerm.split(";")[0]
-        # split the "TO" and the accession number
         if "_" in first_term:
             term_split = first_term.split("_")
+            onto_acc = term_split[0] + ":" + term_split[1]
         else:
-            term_split = first_term.split(":")
-
-        # condition in case there is only accession number without "TO" or "GO"
-        onto = ''
-        acc = ''
-        if len(term_split) == 2:
-            onto = term_split[0]+":"
-            acc = term_split[1]
-        else:
-            acc = term_split[0]
-
-        onto_acc = onto + acc
-
+            onto_acc = first_term
+        
+        # create the url and append it to the list
         url = f'{database}genepage?list={geneAcc}&keyword=%22{onto_acc}%22'
-
         urls.append(url)
         
     # add urls to dataframe
@@ -385,7 +398,7 @@ def get_study_DEXgenes(studyAcc):
     final_result_study = flatten(final_result_study)
     total_DEXgenes = set(final_result_study)
 
-    print("Number of genes in study is: " + str(len(total_DEXgenes)))
+    print("Number of DEX genes obtained from the study is = " + str(len(total_DEXgenes)))
     return total_DEXgenes
 
 

@@ -3,30 +3,31 @@ This script reads the cypher-queries.txt to extract
 the cypher pathways for the selected ontology.
 """
 
-#import the os library that provides functions for dealing with files and interacting with the operating system
+# import the os library
 import os
 
 def get_cypher_queries(input_file, ontology):
     """This function gets they cypher queries for the selected ontology"""
     
-    #Create an empty list to add the module lines to
+    # Create an empty list to add the query lines to it
     queries_list=[]
     
-    #open the input file for reading
+    # open the input file for reading
     with open(input_file, "r") as fr:        
         
-        #read each line in the input file
+        # read each line in the input file
         for line in fr:
             if ontology in line:
                 # Add this line to the queries list
                 queries_list.append(line)
     
-    #Join the lines in the list and print them to screen
+    # Join the lines in the list and print them to screen
     queries = "".join(queries_list)
     print(queries)
 
 
 
+### Example:
 
 input_file = "./cypher_queries.txt"
 ontology = "BioProc"
