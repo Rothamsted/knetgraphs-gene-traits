@@ -3,7 +3,7 @@ This script contains the pathway queries for gene--trait
 to be used in the enrichmnet_analysis_functions.py
 """
 
-# Create the query
+# Create the query.
 query_subset1 = """
 PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
 PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
