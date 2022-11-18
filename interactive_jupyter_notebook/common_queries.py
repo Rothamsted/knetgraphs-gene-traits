@@ -46,7 +46,7 @@ query_study_list = """
     } """
 
 
-query_DEXgenes_in_study = """
+query_CountStudyGenes = """
     PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
     PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
     PREFIX bkr: <http://knetminer.org/data/rdf/resources/>
@@ -58,7 +58,7 @@ query_DEXgenes_in_study = """
     PREFIX bioschema: <http://bioschemas.org/>
     PREFIX schema: <http://schema.org/>
 
-    SELECT *
+    SELECT (count(*) as ?Count)
     WHERE {
         ?gene a bk:Gene;
             dcterms:identifier ?geneAcc.
@@ -77,7 +77,7 @@ query_DEXgenes_in_study = """
     } """
 
 
-query_CountStudyGenes = """
+query_DEXgenes_in_study = """
     PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
     PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
     PREFIX bkr: <http://knetminer.org/data/rdf/resources/>
@@ -89,7 +89,7 @@ query_CountStudyGenes = """
     PREFIX bioschema: <http://bioschemas.org/>
     PREFIX schema: <http://schema.org/>
 
-    SELECT (count(*) as ?Count)
+    SELECT *
     WHERE {
         ?gene a bk:Gene;
             dcterms:identifier ?geneAcc.
@@ -134,6 +134,41 @@ query_StudyPvalues = """
             agri:evidence ?study.
         
         ?expStatement agri:pvalue ?pvalue.
+
+        ?study a bioschema:Study;
+            schema:additionalProperty bkr:gxa_analysis_type_differential;
+            dc:title ?studyTitle;
+            schema:identifier '%s'.
+    } """
+
+
+query_FilterByPvalues = """
+    PREFIX bk: <http://knetminer.org/data/rdf/terms/biokno/>
+    PREFIX bka: <http://knetminer.org/data/rdf/terms/biokno/attributes/>
+    PREFIX bkr: <http://knetminer.org/data/rdf/resources/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX dc: <http://purl.org/dc/elements/1.1/>
+    PREFIX dcterms: <http://purl.org/dc/terms/>
+    PREFIX agri: <http://agrischemas.org/>
+    PREFIX bioschema: <http://bioschemas.org/>
+    PREFIX schema: <http://schema.org/>
+
+    SELECT *
+    WHERE {
+        ?gene a bk:Gene;
+            dcterms:identifier ?geneAcc.
+
+        ?gene bioschema:expressedIn ?condition.
+
+        ?expStatement a rdfs:Statement;
+            rdf:subject ?gene;
+            rdf:predicate bioschema:expressedIn;
+            rdf:object ?condition;
+            agri:evidence ?study.
+        
+        ?expStatement agri:pvalue ?pvalue.
+        FILTER ( ?pvalue <= %s)
 
         ?study a bioschema:Study;
             schema:additionalProperty bkr:gxa_analysis_type_differential;

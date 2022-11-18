@@ -121,6 +121,83 @@ def display_radiobuttons(data):
 
     return radiobuttons
 
+
+# Class to make plot interactive
+# source: https://matplotlib.org/stable/gallery/event_handling/cursor_demo.html
+
+class SnappingCursor:
+    """
+    A cross hair cursor that snaps to the data point of a line, which is
+    closest to the *x* position of the cursor.
+
+    For simplicity, this assumes that *x* values of the data are sorted.
+    """
+    def __init__(self, ax, line):
+        self.ax = ax
+        self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
+        self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
+        self.x, self.y = line.get_data()
+        self._last_index = None
+        # text location in axes coords
+        self.text = ax.text(0.72, 0.03, '', transform=ax.transAxes)
+        
+        # variables to get xdata and yadata
+        self.xdata = 0
+        self.yadat = 0
+
+    def set_cross_hair_visible(self, visible):
+        need_redraw = self.horizontal_line.get_visible() != visible
+        self.horizontal_line.set_visible(visible)
+        self.vertical_line.set_visible(visible)
+        self.text.set_visible(visible)
+        return need_redraw
+
+    def on_mouse_move(self, event):
+        if not event.inaxes:
+            self._last_index = None
+            need_redraw = self.set_cross_hair_visible(False)
+            if need_redraw:
+                self.ax.figure.canvas.draw()
+        else:
+            self.set_cross_hair_visible(True)
+            x, y = event.xdata, event.ydata
+            index = min(np.searchsorted(self.x, x), len(self.x) - 1)
+            if index == self._last_index:
+                return  # still on the same data point. Nothing to do.
+            self._last_index = index
+            x = self.x[index]
+            y = self.y[index]
+            # update the line positions
+            self.horizontal_line.set_ydata(y)
+            self.vertical_line.set_xdata(x)
+            self.text.set_text('x=%1.4f, y=%1.0f' % (x, y))
+            self.ax.figure.canvas.draw()
+
+    def on_mouse_click(self, event):
+        if not event.inaxes:
+            self._last_index = None
+            need_redraw = self.set_cross_hair_visible(False)
+            if need_redraw:
+                self.ax.figure.canvas.draw()
+        else:
+            self.set_cross_hair_visible(True)
+            x, y = event.xdata, event.ydata
+            index = min(np.searchsorted(self.x, x), len(self.x) - 1)
+            if index == self._last_index:
+                return  # still on the same data point. Nothing to do.
+            self._last_index = index
+            x = self.x[index]
+            y = self.y[index]
+            # update the line positions
+            self.horizontal_line.set_ydata(y)
+            self.vertical_line.set_xdata(x)
+            self.text.set_text('x=%1.4f, y=%1.0f' % (x, y))
+            self.ax.figure.canvas.draw()
+
+            # get xdata and ydata
+            self.xdata = x
+            self.ydata = y
+
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 # -------------------------------------------- Function to get database files ------------------------------------------------------ #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
@@ -335,11 +412,8 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     # add column to dataframe
     df_Ftest_sorted.insert(4, 'adj p-value', q)
 
-    # sort the dataframe according to adjusted p-value
-    df_Ftest_sorted = df_Ftest_sorted.sort_values(by=['adj p-value'])
-
-    # update the dataframe index
-    df_Ftest_sorted = df_Ftest_sorted.reset_index(drop=True)
+    # sort the dataframe according to adjusted p-value and update the dataframe index
+    df_Ftest_sorted = df_Ftest_sorted.sort_values(by=['adj p-value']).reset_index(drop=True)
     
 
     ### create download links for final tables and show first 10 rows of each table ###
@@ -388,18 +462,36 @@ def get_study_list(taxID):
 
 
 # Get the differentially expressed genes in a study
-def get_study_DEXgenes(studyAcc):
+def get_study_DEXgenes(studyAcc, pvalue=0):
     """This function gets the differentially expressed genes in a study."""
 
     # run the query
-    sparql.setQuery (cq.query_DEXgenes_in_study%studyAcc)
+    if pvalue == 0:
+        sparql.setQuery (cq.query_DEXgenes_in_study%studyAcc)
+    else:
+        sparql.setQuery (cq.query_FilterByPvalues%(pvalue, studyAcc))
+    
+    # get the results
     result = sparql.query().bindings
     final_result_study = [ [ r['geneAcc'].value] for r in result ]
     final_result_study = flatten(final_result_study)
     total_DEXgenes = set(final_result_study)
 
-    print("Number of DEX genes obtained from the study is = " + str(len(total_DEXgenes)))
     return total_DEXgenes
+
+
+# Get the differentially expressed genes in a study
+# def get_study_FilteredDEXgenes(studyAcc, pvalue):
+#     """This function gets the differentially expressed genes in a study after filtering by pvalues."""
+
+#     # run the query
+#     sparql.setQuery (cq.query_FilterByPvalues%(pvalue, studyAcc))
+#     result = sparql.query().bindings
+#     final_result_study = [ [ r['geneAcc'].value] for r in result ]
+#     final_result_study = flatten(final_result_study)
+#     total_DEXgenes = set(final_result_study)
+
+#     return total_DEXgenes
 
 
 # Get the number of differentially expressed genes in a study
@@ -411,12 +503,11 @@ def get_StudyGeneCount(studyAcc):
     result = sparql.query().bindings
     result = [ [ r['Count'].value] for r in result ]
     StudyGeneCount = int(result[0][0])
-    
-    print("Total Number of Genes in study = " + str(StudyGeneCount))
+
     return StudyGeneCount
 
 
-# Show a histogram for the p-values or a bar graph for ordical TPM, for the differentially expressed genes in a study
+# Show a cumulative frequency for the p-values for the differentially expressed genes in a study
 def get_StudyPvalues(studyAcc):
     """This function gets the p-values for the genes in a study or their ordidinal TPM
     and plots a histogram or a bar graph respectively."""
@@ -424,51 +515,71 @@ def get_StudyPvalues(studyAcc):
     # run the query
     sparql.setQuery (cq.query_StudyPvalues%studyAcc)
     result = sparql.query().bindings
+    StudyPvalues = [ [ r['pvalue'].value] for r in result ]
+    # flatten the list of lists into a list
+    StudyPvalues = flatten(StudyPvalues)
+    # change the string number into float
+    StudyPvalues = [float(x) for x in StudyPvalues]
+    # sort the pvalues in ascending order
+    StudyPvalues.sort(key=None, reverse=False)
+    # Render into a dataframe
+    df_StudyPvalues = pd.DataFrame (StudyPvalues, columns = ['StudyPvalues'])
 
-    # if the study results are from Differential experiments, it will have p-values
-    if 'pvalue' in result[0]:
-        StudyPvalues = [ [ r['pvalue'].value] for r in result ]
-        # flatten the list of lists into a list
-        StudyPvalues = flatten(StudyPvalues)
-        # change the string number into float
-        StudyPvalues = [float(x) for x in StudyPvalues]
-        # sort the pvalues in ascending order
-        StudyPvalues.sort(key=None, reverse=False)
 
-        # plot the p-values in a histogram using matplotlib
-        plt.hist(StudyPvalues, edgecolor='black', bins=[0, 0.01, 0.02, 0.03, 0.04, 0.05])
+    # get the counts(frequency) of the pvalues
+    df_StudyPvalues_count = df_StudyPvalues['StudyPvalues'].value_counts().rename_axis('pvalues').reset_index(name='frequency')
+    # sort the dataframe according to pvalues and reset the index
+    df_StudyPvalues_count = df_StudyPvalues_count.sort_values('pvalues').reset_index(drop=True)
+    # get the cumulative frequeny
+    df_StudyPvalues_count['Cumulative Frequency'] = df_StudyPvalues_count['frequency'].cumsum()
+
+    # df_StudyPvalues_count.plot.line(x = 'pvalues', y = 'Cumulative Frequency', legend=False)
+    # plt.grid(axis='y', linestyle='--')
+    # plt.grid(axis='x', linestyle='--')
+    # plt.xlabel('p-values', fontweight='bold')
+    # plt.ylabel('cumulative gene frequency', fontweight='bold')
+    # plt.title('P-values Cumulative Frequency', fontweight='bold')
+    # plt.show()
+
+
+    # fig, ax = plt.subplots()
+    # line, = ax.plot('pvalues', 'Cumulative Frequency', data=df_StudyPvalues_count)
+    # ax.set_xlabel('p-values', fontweight='bold')
+    # ax.set_ylabel('cumulative gene frequency', fontweight='bold')
+    # ax.set_title('P-values Cumulative Frequency', fontweight='bold')
+    # ax.grid(True, linestyle='--')
+
+    # snap_cursor = SnappingCursor(ax, line)
+    # # fig.canvas.mpl_connect('button_press_event', snap_cursor.on_mouse_click)
+    # fig.canvas.mpl_connect('motion_notify_event', snap_cursor.on_mouse_move)
+    # plt.show()
+
+    return df_StudyPvalues_count
+
+
+
+def plot_pvalues(df_StudyPvalues_count, pvalues=0):
+
+    if pvalues==0:
+        df_StudyPvalues_count.plot.line(x = 'pvalues', y = 'Cumulative Frequency', legend=False)
         plt.grid(axis='y', linestyle='--')
+        plt.grid(axis='x', linestyle='--')
         plt.xlabel('p-values', fontweight='bold')
-        plt.ylabel('density', fontweight='bold')
-        plt.title('P-values Histogram', fontweight='bold')
+        plt.ylabel('cumulative gene frequency', fontweight='bold')
+        plt.title('P-values Cumulative Frequency', fontweight='bold')
         plt.show()
 
-    # if the study results are from Baseline experiments, it will have TPM
-    # and we want to obtain the ordinal TPM as low, medium and high
     else:
-        StudyTPM = [ [ r['ordinalTpm'].value] for r in result ]
-        # flatten the list of lists into a list
-        StudyTPM = flatten(StudyTPM)
-        # Render into a dataframe
-        df_StudyTPM = pd.DataFrame (StudyTPM, columns = ['StudyTPM'])
-        # get the counts of the orders
-        df_StudyTPM_count = df_StudyTPM['StudyTPM'].value_counts().rename_axis('ordinalTpm').reset_index(name='counts')
+        pvalue = df_StudyPvalues_count[df_StudyPvalues_count['pvalues'] <= pvalues].iloc[-1]['pvalues']
+        geneNum = df_StudyPvalues_count[df_StudyPvalues_count['pvalues'] <= pvalues].iloc[-1]['Cumulative Frequency']
 
-        from pandas.api.types import CategoricalDtype
-        # create a custom category type
-        cat_order = CategoricalDtype(['low', 'medium', 'high'], ordered=True)
-        # cast the ordinalTpm column to the custom category type
-        df_StudyTPM_count['ordinalTpm'] = df_StudyTPM_count['ordinalTpm'].astype(cat_order)
-        # sort values according to ordinalTpm
-        df_StudyTPM_count = df_StudyTPM_count.sort_values('ordinalTpm')
-
-        # plot the ordinalTpm in a bar graph using matplotlib
-        plt.bar(range(len(df_StudyTPM_count)), list(df_StudyTPM_count['counts']), align='center', edgecolor='black')
-        plt.xticks(range(len(df_StudyTPM_count)), list(df_StudyTPM_count['ordinalTpm']))
+        df_StudyPvalues_count.plot.line(x = 'pvalues', y = 'Cumulative Frequency', legend=False)
         plt.grid(axis='y', linestyle='--')
-        plt.xlabel('\nordinal TPM', fontweight='bold')
-        plt.ylabel('counts', fontweight='bold')
-        plt.title('Ordinal TPM Bar Graph', fontweight='bold')
-        for i, v in enumerate(df_StudyTPM_count['counts']):
-            plt.text(i-0.10, v, str(v), color='red') #fontweight='bold'
+        plt.grid(axis='x', linestyle='--')
+        plt.xlabel('p-values', fontweight='bold')
+        plt.ylabel('cumulative gene frequency', fontweight='bold')
+        plt.axhline(y= geneNum, color='k', lw=0.8, ls='--')
+        plt.axvline(x= pvalue, color='k', lw=0.8, ls='--')
+        plt.text(0.04, 0, 'x=%1.4f, y=%1.0f' % (pvalue, geneNum), fontdict=None)
+        plt.title('P-values Cumulative Frequency', fontweight='bold')
         plt.show()
