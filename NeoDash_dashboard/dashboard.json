@@ -1,8 +1,8 @@
 {
   "title": "KnetMiner Dashboard",
-  "version": "2.1",
+  "version": "2.2",
   "settings": {
-    "pagenumber": 0,
+    "pagenumber": 7,
     "editable": true,
     "fullscreenEnabled": true,
     "parameters": {
@@ -12,11 +12,12 @@
       "neodash_node_label": "Gene",
       "neodash_trait_prefname": "amylose content",
       "neodash_gene_prefname": "PMAT1",
-      "neodash_gene_taxid": "4565"
+      "neodash_gene_taxid": "15368",
+      "undefined": ""
     },
     "downloadImageEnabled": true,
     "disableRowLimiting": true,
-    "queryTimeLimit": 400
+    "queryTimeLimit": 4000
   },
   "pages": [
     {
@@ -222,7 +223,7 @@
           "width": 5,
           "height": 2,
           "x": 0,
-          "y": 2,
+          "y": 5,
           "type": "bar",
           "selection": {
             "index": "TAXID",
@@ -251,8 +252,8 @@
           "query": "MATCH (p:Protein)\nRETURN distinct p.TAXID as TAXID, count (p) as Protein_count\nORDER BY Protein_count DESC",
           "width": 6,
           "height": 2,
-          "x": 5,
-          "y": 2,
+          "x": 4,
+          "y": 3,
           "type": "pie",
           "selection": {
             "index": "TAXID",
@@ -288,7 +289,7 @@
           "width": 6,
           "height": 3,
           "x": 0,
-          "y": 4,
+          "y": 7,
           "type": "table",
           "selection": {},
           "settings": {
@@ -549,12 +550,13 @@
                 "customization": "row color",
                 "customizationValue": "black"
               }
-            ]
+            ],
+            "autorun": false
           }
         },
         {
           "title": "Choose Gene TAX ID",
-          "query": "MATCH (n:`Gene`) \nWHERE toLower(toString(n.`TAXID`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`TAXID` as value LIMIT 5",
+          "query": "MATCH (n:`Gene`) \nWHERE toLower(toString(n.`TAXID`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`TAXID` as value ORDER BY size(toString(value)) ASC LIMIT 5",
           "width": 5,
           "height": 2,
           "x": 5,
@@ -894,7 +896,47 @@
           }
         }
       ]
+    },
+    {
+      "title": "Bioprocess",
+      "reports": [
+        {
+          "title": "Choose Gene TAX ID",
+          "query": "MATCH (n:`Gene`) \nWHERE toLower(toString(n.`TAXID`)) CONTAINS toLower($input) \nRETURN DISTINCT n.`TAXID` as value ORDER BY size(toString(value)) ASC LIMIT 5",
+          "width": 12,
+          "height": 2,
+          "x": 0,
+          "y": 0,
+          "type": "select",
+          "selection": {},
+          "settings": {
+            "type": "Node Property",
+            "entityType": "Gene",
+            "propertyType": "TAXID",
+            "parameterName": "neodash_gene_taxid"
+          }
+        },
+        {
+          "title": "Bioprocess Pathways (starting with the chosen gene TAX ID)",
+          "query": "MATCH path = (m:Gene) - [:participates_in] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:participates_in] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:part_of] -> (:CoExpCluster) - [:enriched_for] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:part_of] -> (:CoExpCluster) - [:enriched_for] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:differentially_expressed] -> (:DGES) - [:enriched_for] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:differentially_expressed] -> (:DGES) - [:enriched_for] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:homoeolog] - (:Gene) - [:participates_in] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:homoeolog] - (:Gene) - [:participates_in] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:regulates|genetic|physical] - (:Gene) - [:participates_in] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:regulates|genetic|physical] - (:Gene) - [:participates_in] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:participates_in] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:participates_in] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:has_domain] -> (:ProtDomain) - [:participates_in] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:enc] -> (:Protein) - [:h_s_s|ortho|xref*0..1] - (:Protein) - [:has_domain] -> (:ProtDomain) - [:participates_in] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:participates_in] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:participates_in] -> (:BioProc)' AS pathway, count\n\nUNION ALL\nMATCH path = (m:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:participates_in] -> (:BioProc)\nWHERE m.TAXID = $neodash_gene_taxid\nWITH count(path) AS count\nRETURN '(:Gene) - [:enc] -> (:Protein) - [:ortho] - (:Protein) <- [:enc] - (:Gene) - [:genetic|physical] - (:Gene) - [:participates_in] -> (:BioProc)' AS pathway, count\n",
+          "width": 12,
+          "height": 3,
+          "x": 0,
+          "y": 2,
+          "type": "table",
+          "selection": {},
+          "settings": {
+            "autorun": false,
+            "columnWidths": "[6,1]",
+            "allowDownload": true
+          }
+        }
+      ]
     }
   ],
-  "parameters": {}
+  "parameters": {},
+  "extensions": {
+    "advanced-charts": true,
+    "styling": true
+  }
 }
