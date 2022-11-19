@@ -26,10 +26,10 @@ WHERE {
 pathways = [
     """?gene1 bk:participates_in ?bioProc. BIND ("GO_0-0" AS ?evidence)""",
     
-    """?gene1 bk:part_of ?coExpCluster.
-    ?coExpCluster a bk:CoExpCluster.
-    ?coExpCluster bk:enriched_for ?bioProc.
-    BIND ("CoExpCluster_0-0" AS ?evidence)""",
+    # """?gene1 bk:part_of ?coExpCluster.
+    # ?coExpCluster a bk:CoExpCluster.
+    # ?coExpCluster bk:enriched_for ?bioProc.
+    # BIND ("CoExpCluster_0-0" AS ?evidence)""",
 
     """?gene1 bk:differentially_expressed ?dGES.
     ?dGES a bk:DGES.
