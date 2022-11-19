@@ -31,6 +31,7 @@ sparql = SPARQLWrapper2 ("http://knetminer-data.cyverseuk.org/lodestar/sparql")
 # -------------------------------------------- General Functions ------------------------------------------------------------------- #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 
+
 # A function to create list for the concepts
 def get_concepts():
     concepts = ['Trait', 'BioProcess']
@@ -91,6 +92,7 @@ def create_download_link(df, filename, title):
 # ------------------------------------  Display Functions for Checkboxes and RadioButtons ------------------------------------------ #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 
+
 # refrence: https://stackoverflow.com/questions/57219796/ipywidgets-dynamic-creation-of-checkboxes-and-selection-of-data
 
 def display_checkboxes(data):
@@ -122,85 +124,11 @@ def display_radiobuttons(data):
     return radiobuttons
 
 
-# Class to make plot interactive
-# source: https://matplotlib.org/stable/gallery/event_handling/cursor_demo.html
-
-class SnappingCursor:
-    """
-    A cross hair cursor that snaps to the data point of a line, which is
-    closest to the *x* position of the cursor.
-
-    For simplicity, this assumes that *x* values of the data are sorted.
-    """
-    def __init__(self, ax, line):
-        self.ax = ax
-        self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
-        self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
-        self.x, self.y = line.get_data()
-        self._last_index = None
-        # text location in axes coords
-        self.text = ax.text(0.72, 0.03, '', transform=ax.transAxes)
-        
-        # variables to get xdata and yadata
-        self.xdata = 0
-        self.yadat = 0
-
-    def set_cross_hair_visible(self, visible):
-        need_redraw = self.horizontal_line.get_visible() != visible
-        self.horizontal_line.set_visible(visible)
-        self.vertical_line.set_visible(visible)
-        self.text.set_visible(visible)
-        return need_redraw
-
-    def on_mouse_move(self, event):
-        if not event.inaxes:
-            self._last_index = None
-            need_redraw = self.set_cross_hair_visible(False)
-            if need_redraw:
-                self.ax.figure.canvas.draw()
-        else:
-            self.set_cross_hair_visible(True)
-            x, y = event.xdata, event.ydata
-            index = min(np.searchsorted(self.x, x), len(self.x) - 1)
-            if index == self._last_index:
-                return  # still on the same data point. Nothing to do.
-            self._last_index = index
-            x = self.x[index]
-            y = self.y[index]
-            # update the line positions
-            self.horizontal_line.set_ydata(y)
-            self.vertical_line.set_xdata(x)
-            self.text.set_text('x=%1.4f, y=%1.0f' % (x, y))
-            self.ax.figure.canvas.draw()
-
-    def on_mouse_click(self, event):
-        if not event.inaxes:
-            self._last_index = None
-            need_redraw = self.set_cross_hair_visible(False)
-            if need_redraw:
-                self.ax.figure.canvas.draw()
-        else:
-            self.set_cross_hair_visible(True)
-            x, y = event.xdata, event.ydata
-            index = min(np.searchsorted(self.x, x), len(self.x) - 1)
-            if index == self._last_index:
-                return  # still on the same data point. Nothing to do.
-            self._last_index = index
-            x = self.x[index]
-            y = self.y[index]
-            # update the line positions
-            self.horizontal_line.set_ydata(y)
-            self.vertical_line.set_xdata(x)
-            self.text.set_text('x=%1.4f, y=%1.0f' % (x, y))
-            self.ax.figure.canvas.draw()
-
-            # get xdata and ydata
-            self.xdata = x
-            self.ydata = y
 
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 # -------------------------------------------- Function to get database files ------------------------------------------------------ #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
+
 
 # Function to get all of the selected concept related to the genes
 def get_database_csv(taxID, database, concept):
@@ -294,6 +222,7 @@ def get_database_csv(taxID, database, concept):
 # -------------------------------------------- Functions for Genes ----------------------------------------------------------------- #
 # ---------------------------------------------------------------------------------------------------------------------------------- #
 
+
 # Create a function to get the count of genes in the database for a species tax ID.
 def get_gene_count(taxID):
     """This function gets the count of genes in the database for a species tax ID."""
@@ -323,7 +252,6 @@ def get_df_GeneTrait_filtered(dframe_GeneTrait, total_DEXgenes):
     dframe_GeneTrait_filtered = dframe_GeneTrait_filtered.reset_index(drop=True)
 
     return dframe_GeneTrait_filtered
-
 
 
 
@@ -438,7 +366,6 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
     display(df_Ftest_sorted.head(10))
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
-    
 
 
 
@@ -457,16 +384,18 @@ def get_study_list(taxID):
 
     # Render into a table
     dframe_study_list = pd.DataFrame ( final_result_study, columns = ["Study Accession", "Study Title"] )
+    dframe_study_list = dframe_study_list.sort_values("Study Accession").reset_index(drop=True)
+    dframe_study_list["Accession_Title"] = dframe_study_list["Study Accession"] + ": " + dframe_study_list["Study Title"]
 
     return dframe_study_list
 
 
 # Get the differentially expressed genes in a study
-def get_study_DEXgenes(studyAcc, pvalue=0):
+def get_study_DEXgenes(studyAcc, filter=False, pvalue=0):
     """This function gets the differentially expressed genes in a study."""
 
     # run the query
-    if pvalue == 0:
+    if filter == False:
         sparql.setQuery (cq.query_DEXgenes_in_study%studyAcc)
     else:
         sparql.setQuery (cq.query_FilterByPvalues%(pvalue, studyAcc))
@@ -478,20 +407,6 @@ def get_study_DEXgenes(studyAcc, pvalue=0):
     total_DEXgenes = set(final_result_study)
 
     return total_DEXgenes
-
-
-# Get the differentially expressed genes in a study
-# def get_study_FilteredDEXgenes(studyAcc, pvalue):
-#     """This function gets the differentially expressed genes in a study after filtering by pvalues."""
-
-#     # run the query
-#     sparql.setQuery (cq.query_FilterByPvalues%(pvalue, studyAcc))
-#     result = sparql.query().bindings
-#     final_result_study = [ [ r['geneAcc'].value] for r in result ]
-#     final_result_study = flatten(final_result_study)
-#     total_DEXgenes = set(final_result_study)
-
-#     return total_DEXgenes
 
 
 # Get the number of differentially expressed genes in a study
@@ -507,10 +422,9 @@ def get_StudyGeneCount(studyAcc):
     return StudyGeneCount
 
 
-# Show a cumulative frequency for the p-values for the differentially expressed genes in a study
+# Get a datafarme for the pvalues in a study and the respective number of cumulative genes
 def get_StudyPvalues(studyAcc):
-    """This function gets the p-values for the genes in a study or their ordidinal TPM
-    and plots a histogram or a bar graph respectively."""
+    """This function gets the p-values for the genes in a study and the cumulative number of genes at each pvalue."""
 
     # run the query
     sparql.setQuery (cq.query_StudyPvalues%studyAcc)
@@ -525,7 +439,6 @@ def get_StudyPvalues(studyAcc):
     # Render into a dataframe
     df_StudyPvalues = pd.DataFrame (StudyPvalues, columns = ['StudyPvalues'])
 
-
     # get the counts(frequency) of the pvalues
     df_StudyPvalues_count = df_StudyPvalues['StudyPvalues'].value_counts().rename_axis('pvalues').reset_index(name='frequency')
     # sort the dataframe according to pvalues and reset the index
@@ -533,32 +446,12 @@ def get_StudyPvalues(studyAcc):
     # get the cumulative frequeny
     df_StudyPvalues_count['Cumulative Frequency'] = df_StudyPvalues_count['frequency'].cumsum()
 
-    # df_StudyPvalues_count.plot.line(x = 'pvalues', y = 'Cumulative Frequency', legend=False)
-    # plt.grid(axis='y', linestyle='--')
-    # plt.grid(axis='x', linestyle='--')
-    # plt.xlabel('p-values', fontweight='bold')
-    # plt.ylabel('cumulative gene frequency', fontweight='bold')
-    # plt.title('P-values Cumulative Frequency', fontweight='bold')
-    # plt.show()
-
-
-    # fig, ax = plt.subplots()
-    # line, = ax.plot('pvalues', 'Cumulative Frequency', data=df_StudyPvalues_count)
-    # ax.set_xlabel('p-values', fontweight='bold')
-    # ax.set_ylabel('cumulative gene frequency', fontweight='bold')
-    # ax.set_title('P-values Cumulative Frequency', fontweight='bold')
-    # ax.grid(True, linestyle='--')
-
-    # snap_cursor = SnappingCursor(ax, line)
-    # # fig.canvas.mpl_connect('button_press_event', snap_cursor.on_mouse_click)
-    # fig.canvas.mpl_connect('motion_notify_event', snap_cursor.on_mouse_move)
-    # plt.show()
-
     return df_StudyPvalues_count
 
 
-
+# Show a cumulative frequency for the p-values for the differentially expressed genes in a study
 def plot_pvalues(df_StudyPvalues_count, pvalues=0):
+    """This function plots the cumulative number of genes against the p-values."""
 
     if pvalues==0:
         df_StudyPvalues_count.plot.line(x = 'pvalues', y = 'Cumulative Frequency', legend=False)
