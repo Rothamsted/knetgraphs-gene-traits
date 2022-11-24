@@ -3,6 +3,7 @@
 pandas
 numpy
 matplotlib
+ipympl
 scipy
 sparqlwrapper
 IPython
