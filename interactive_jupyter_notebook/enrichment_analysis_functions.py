@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import base64
-from IPython.display import HTML
+from IPython.display import HTML, display
 import importlib
 
 # Import ipywidgets for interactive interface
