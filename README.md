@@ -12,7 +12,7 @@ View the [User Manuals](https://github.com/Rothamsted/knetgraphs-gene-traits/blo
 
 # Running the notebooks on local computer
 
-## Download the notebooks
+### Download the notebooks
 Download the interactive notebooks and the required files from [here](https://github.com/Rothamsted/knetgraphs-gene-traits/raw/main/interactive_jupyter_notebook.zip). 
 
 
