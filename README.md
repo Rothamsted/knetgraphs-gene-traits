@@ -1,9 +1,12 @@
 # Enrichment Analysis Notebooks 
 Enrichment Analysis Use Cases. Tools to analyse plant biology knowledge graphs and find enriched traits or bioprocesses in differential gene expression data. The project uses data from Knetminer, ENSEMBL, EBI Gene Expression Atlas and others, exported as Knowledge graphs using Agrischemas/Bioschemas annotations.
-
+<br>
+<br>
 
 # Database Files Notebook
 This notebook is intended mainly for KnetMiner developers. The files generated are already provided in the interactive_jupyter_notebook folder on Github.
+<br>
+<br>
 
 ### Notebook Interface
 There are two cells in the notebook.
@@ -17,7 +20,7 @@ There are two cells in the notebook.
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept2.PNG?raw=true)
     <br>
     <br>
-    
+
 # Enrichment Analysis Notebook
 This is the main notebook to perform the enrichment analysis.
 
@@ -45,11 +48,12 @@ This is the main notebook to perform the enrichment analysis.
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/EnrichmentAnalysis5.PNG?raw=true)
 
     - Whether you chose list or study, the final result is two tables, which can be downloaded as csv files:<br>
-    The first shows the chosen genes and related ontology, with the evidence and the link to the network on KnetMiner.<br>
-    The second shows the p-values for the ontology terms.
+        - The first table shows the chosen genes and related ontology, with the evidence and the link to the network on KnetMiner.<br>
+        - The second table shows the p-values for the ontology terms.
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/EnrichmentAnalysis6.PNG?raw=true)
-
+    <br>
+    <br>
 
 ### Other cells:
 
@@ -58,8 +62,8 @@ This is the main notebook to perform the enrichment analysis.
 2. To filter the first tabel (gene-concept), run the cells in the sections:
     - choosing the ontology term to display the related genes
     - or choosing a gene to display the related ontology terms
-
-
+    <br>
+    <br>
 
 # Running the notebooks using Binder
 For running the jupyter notebook for Enrichment Analysis using KnetMiner SPARQL endpoint,<br>click on launch binder:
@@ -69,7 +73,8 @@ For running the jupyter notebook for gene-concept relations from the database,<b
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Rothamsted/knetgraphs-gene-traits/HEAD?labpath=interactive_jupyter_notebook%2FGeneConcept_database_relations.ipynb)
 
 View the [User Manuals](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/User%20Manuals.pdf) for instructions on how to load the NeoDash dashboard and how to run the Jupyter Notebooks on local computer.
-
+<br>
+<br>
 
 # Running the notebooks on local computer
 
