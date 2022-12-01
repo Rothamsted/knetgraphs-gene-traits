@@ -18,15 +18,19 @@
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture2.png?raw=true)
                         
-5.	Click the 3 dashes on the top left side ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture3.png?raw=true) and click on "Load" from the menu.
+5.	Click the three dashes on the top left side ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture3.png?raw=true) and click on "Load" from the menu.
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture4.png?raw=true)
                                             
 6.	Click "SELECT FROM FILE", choose the "dashboard.json" file and click "open".
 
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture5.png?raw=true)
+
 7.	Then click on "LOAD DASHBOARD" to load the "KnetMiner Dashboard".
 
-8.	To view the cypher query for each report, click on the 3 dots   at the top right of each report box.
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture6.png?raw=true)
+
+8.	To view the cypher query for each report, click on the three dots ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture7.png?raw=true) at the top right of each report box.
 
 
 
