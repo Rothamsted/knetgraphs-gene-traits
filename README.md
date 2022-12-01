@@ -1,5 +1,20 @@
 # Enrichment Analysis Notebooks 
-Enrichment Analysis Use Cases. Tools to analyse plant biology knowledge graphs and find enriched traits or bioprocesses in differential gene expression data. The project uses data from Knetminer, ENSEMBL, EBI Gene Expression Atlas and others, exported as Knowledge graphs using Agrischemas/Bioschemas annotations. 
+Enrichment Analysis Use Cases. Tools to analyse plant biology knowledge graphs and find enriched traits or bioprocesses in differential gene expression data. The project uses data from Knetminer, ENSEMBL, EBI Gene Expression Atlas and others, exported as Knowledge graphs using Agrischemas/Bioschemas annotations.
+
+# Database Files Notebook
+This notebook is intended mainly for KnetMiner developers. The files generated are already provided in the interactive_jupyter_notebook folder on Github.
+
+### Notebook Interface
+There are two cellsin the notebook.
+
+1. Run the first cell to choose the species and concepts.
+![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept1.PNG?raw=true)
+
+2. Run the second cell to get the download link for the database csv files.
+![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept2.PNG?raw=true)
+
+# Enrichment Analysis Notebook
+This is the main notebook to perform the enrichment analysis.
 
 # Running the notebooks using Binder
 For running the jupyter notebook for Enrichment Analysis using KnetMiner SPARQL endpoint,<br>click on launch binder:
