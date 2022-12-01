@@ -10,14 +10,14 @@ There are two cells in the notebook.
 
 1. Run the first cell to choose the species and concepts.
 
-![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept1.PNG?raw=true)
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept1.PNG?raw=true)
 
 2. Run the second cell to get the download link for the database csv files.
 
-![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept2.PNG?raw=true)
-
-
-
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept2.PNG?raw=true)
+    <br>
+    <br>
+    
 # Enrichment Analysis Notebook
 This is the main notebook to perform the enrichment analysis.
 
@@ -25,7 +25,7 @@ This is the main notebook to perform the enrichment analysis.
 
 1. Run the first cell to choose the species, concept and study/list.
 
-![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/EnrichmentAnalysis1.PNG?raw=true)
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/EnrichmentAnalysis1.PNG?raw=true)
 
 2. Run the second cell to perform the analysis:
 
