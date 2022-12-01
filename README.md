@@ -66,13 +66,13 @@ This is the main notebook to perform the enrichment analysis.
 
 # Running the notebooks using Binder
 
-**Please Note:** The binders take sometime to be built and might fail a couple of times before launching successfully.
-
 For running the jupyter notebook for Enrichment Analysis using KnetMiner SPARQL endpoint,<br>click on launch binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Rothamsted/knetgraphs-gene-traits/HEAD?labpath=interactive_jupyter_notebook%2FKnetMiner_SPARQL_EA.ipynb)
 
 For running the jupyter notebook for gene-concept relations from the database,<br>click on launch binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Rothamsted/knetgraphs-gene-traits/HEAD?labpath=interactive_jupyter_notebook%2FGeneConcept_database_relations.ipynb)
+
+**Please Note:** The binders take sometime to be built and might fail a couple of times before launching successfully.
 <br>
 
 # Running the notebooks on local computer
