@@ -18,8 +18,7 @@
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture2.png?raw=true)
                         
-5.	Click the 3 dashes on the top left side ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture3
-png?raw=true) and click on "Load" from the menu.
+5.	Click the 3 dashes on the top left side ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture3.png?raw=true) and click on "Load" from the menu.
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture4.png?raw=true)
                                             
