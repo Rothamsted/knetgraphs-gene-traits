@@ -76,8 +76,24 @@ For running the jupyter notebook for gene-concept relations from the database,<b
 # Running the notebooks on local computer
 
 ### Download the notebooks
-[Download the zipped folder](https://github.com/Rothamsted/knetgraphs-gene-traits/raw/main/interactive_jupyter_notebook.zip) for the interactive notebooks and the required files. 
+
+[Download the zipped folder](https://github.com/Rothamsted/knetgraphs-gene-traits/raw/main/interactive_jupyter_notebook.zip) for the interactive notebooks and the required files and unzip it. 
 <br>
+
+### Install conda and dependncies
+
+1. [Install Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+2. Open the miniconda prompt and write the following commands:
+
+    ```
+    conda create -n my-conda-env python=3.9.12      # creates new virtual env
+    conda activate my-conda-env                     # activate environment in terminal
+    cd "path/to/interactive_jupyter_notebook"       # change directory to interactive_jupyter_notebook folder
+    pip install -r requirements.txt                 # install requirements
+    jupyter notebook                                # start server + kernel inside my-conda-env
+    ```
+
 
 # Requirements
 - python v3.9.12
