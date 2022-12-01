@@ -48,7 +48,7 @@ This is the main notebook to perform the enrichment analysis.
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/EnrichmentAnalysis5.PNG?raw=true)
 
     - Whether you chose list or study, the final result is two tables, which can be downloaded as csv files:<br>
-        - The first table shows the chosen genes and related ontology, with the evidence and the link to the network on KnetMiner.<br>
+        - The first table shows the chosen genes and related ontology, with the evidence and the link to the network knowledge graphs on KnetMiner.<br>
         - The second table shows the p-values for the ontology terms.
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/EnrichmentAnalysis6.PNG?raw=true)
@@ -59,7 +59,7 @@ This is the main notebook to perform the enrichment analysis.
 
 1. Run the cells in the "View whole tables section" if you want to print the complete tables in the notebooks.
 
-2. To filter the first tabel (gene-concept), run the cells in the sections:
+2. To filter the first table (gene-concept), run the cells in the sections:
     - choosing the ontology term to display the related genes
     - or choosing a gene to display the related ontology terms
     <br>
