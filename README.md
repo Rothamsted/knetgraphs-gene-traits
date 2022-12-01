@@ -7,10 +7,12 @@ This notebook is intended mainly for KnetMiner developers. The files generated a
 ### Notebook Interface
 There are two cells in the notebook.
 
-1. Run the first cell to choose the species and concepts.<br>
+1. Run the first cell to choose the species and concepts.
+
 ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept1.PNG?raw=true)
 
-2. Run the second cell to get the download link for the database csv files.<br>
+2. Run the second cell to get the download link for the database csv files.
+
 ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept2.PNG?raw=true)
 
 # Enrichment Analysis Notebook
