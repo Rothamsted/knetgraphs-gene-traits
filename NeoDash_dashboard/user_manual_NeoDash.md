@@ -1,6 +1,6 @@
 # NeoDash User Manual
 
-## Loading NeoDash Dashboard File in Web Browser
+## Loading the Dashboard in Web Browser
 
 1.	Download the [dashboard.json](https://raw.githubusercontent.com/Rothamsted/knetgraphs-gene-traits/e6f111a33fad7a3967a2bb777342ef68c274f11b/NeoDash_dashboard/dashboard.json) file using right mouse click -> Save as… -> save the file.
 
@@ -34,7 +34,7 @@
 <br>
 
 
-## Loading NeoDash Dashboard File in Neo4j Desktop
+## Loading the Dashboard in Neo4j Desktop
 
 1.	Download [Neo4j](https://neo4j.com/download/).
 
@@ -65,4 +65,4 @@
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture13.png?raw=true)
                                                   
-9.	This will open a new window for NeoDash. Follow the same steps as [previous section](#loading-neoDash-dashboard-file-in-web-browser) to load the dashboard.
+9.	This will open a new window for NeoDash. Follow the same steps as [previous section](#loading-the-dashboard-in-web-browser) to load the dashboard.
