@@ -51,7 +51,8 @@
 
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture10.png?raw=true)
 
-5.	Install NeoDash from the following [link](https://install.graphapp.io/).
+5.	Install NeoDash from the following [link](neo4j-desktop://graphapps/install?url=https://registry.npmjs.org/neodash).<br>
+    Other Neo4j tools are available in the [gallery](https://install.graphapp.io/).
 
 6.	This will show a pop-up, click on "Open Neo4j Desktop".
 
