@@ -77,10 +77,11 @@ For running the jupyter notebook for gene-concept relations from the database,<b
 # Running the notebooks on local computer
 
 ### Download the notebooks
-Download the interactive notebooks and the required files from [here](https://github.com/Rothamsted/knetgraphs-gene-traits/raw/main/interactive_jupyter_notebook.zip). 
+[Download the zipped folder](https://github.com/Rothamsted/knetgraphs-gene-traits/raw/main/interactive_jupyter_notebook.zip) for the interactive notebooks and the required files. 
 
 
-### Requirements:
+# Requirements
+- python v3.9.12
 - pandas v1.3.3 
 - numpy v1.21.2
 - matplotlib v3.4.3
