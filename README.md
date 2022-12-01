@@ -5,12 +5,12 @@ Enrichment Analysis Use Cases. Tools to analyse plant biology knowledge graphs a
 This notebook is intended mainly for KnetMiner developers. The files generated are already provided in the interactive_jupyter_notebook folder on Github.
 
 ### Notebook Interface
-There are two cellsin the notebook.
+There are two cells in the notebook.
 
-1. Run the first cell to choose the species and concepts.
+1. Run the first cell to choose the species and concepts.<br>
 ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept1.PNG?raw=true)
 
-2. Run the second cell to get the download link for the database csv files.
+2. Run the second cell to get the download link for the database csv files.<br>
 ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/GeneConcept2.PNG?raw=true)
 
 # Enrichment Analysis Notebook
