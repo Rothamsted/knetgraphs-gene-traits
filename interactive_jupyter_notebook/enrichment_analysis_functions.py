@@ -323,7 +323,11 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
             # 4. Add the data to the df_Ftest table
             df = {'Ontology Term': trait_acc, 'Preferred Name': trait_name, 'odds ratio': oddsratio, 'exact p-value': pvalue,
                 'Reference Genes': len(total_TraitGenes), 'User/Study Genes': a}
-            df_Ftest = df_Ftest.append(df, ignore_index = True)
+            import warnings
+            with warnings.catch_warnings():
+                warnings.simplefilter(action='ignore', category=FutureWarning)
+                # Warning-causing line of code
+                df_Ftest = df_Ftest.append(df, ignore_index = True)
 
 
     ### calculate adjusted p-value ###
