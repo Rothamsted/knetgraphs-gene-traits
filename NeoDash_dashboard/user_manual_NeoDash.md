@@ -2,12 +2,11 @@
 
 ## Loading NeoDash Dashboard File in Web Browser
 
-1.	Download the [dashboard.json](https://raw.githubusercontent.com/Rothamsted/knetgraphs-gene-traits/e6f111a33fad7a3967a2bb777342ef68c274f11b/NeoDash_dashboard/dashboard.json).
-Use right mouse click -> Save as… -> save the file.
+1.	Download the [dashboard.json](https://raw.githubusercontent.com/Rothamsted/knetgraphs-gene-traits/e6f111a33fad7a3967a2bb777342ef68c274f11b/NeoDash_dashboard/dashboard.json) file using right mouse click -> Save as… -> save the file.
 2.	Open [NeoDash](http://neodash.graphapp.io/) in a web browser.
 3.	Click on "NEW DASHBOARD".
 
-    ![image](/knetgraphs-gene-traits/images_for_HTML/Picture1.png)
+    ![image](/Rothamsted/knetgraphs-gene-traits/images_for_HTML/Picture1.png)
                                    
 4.	Fill the following details as follows:
     - Protocol: Choose "bolt" from the drop-down menu
