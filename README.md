@@ -6,7 +6,7 @@ Enrichment Analysis Use Cases. Tools to analyse plant biology knowledge graphs a
 
 # Database Files Notebook
 
-This notebook is intended mainly for KnetMiner developers. The files generated are already provided in the interactive_jupyter_notebook folder on Github.
+This notebook is intended mainly for KnetMiner developers. The files generated are already provided in the **interactive_jupyter_notebook folder** on Github.
 
 ### There are two cells in the notebook:
 
@@ -72,13 +72,12 @@ For running the jupyter notebook for Enrichment Analysis using KnetMiner SPARQL 
 For running the jupyter notebook for gene-concept relations from the database,<br>click on launch binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/Rothamsted/knetgraphs-gene-traits/HEAD?labpath=interactive_jupyter_notebook%2FGeneConcept_database_relations.ipynb)
 <br>
-<br>
 
 # Running the notebooks on local computer
 
 ### Download the notebooks
 [Download the zipped folder](https://github.com/Rothamsted/knetgraphs-gene-traits/raw/main/interactive_jupyter_notebook.zip) for the interactive notebooks and the required files. 
-
+<br>
 
 # Requirements
 - python v3.9.12
