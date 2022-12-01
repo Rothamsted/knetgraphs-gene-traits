@@ -31,27 +31,38 @@
     ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture6.png?raw=true)
 
 8.	To view the cypher query for each report, click on the three dots ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture7.png?raw=true) at the top right of each report box.
-
+<br>
 
 
 ## Loading NeoDash Dashboard File in Neo4j Desktop
 
-1.	Download Neo4j from the following link.
+1.	Download [Neo4j](https://neo4j.com/download/).
 
-2.	Fill the form with your name and email and choose a country. If you don’t have a company name, you can just add dot "."
-Then click on "Download Desktop".
+2.	Fill the form with your name and email and choose a country. If you don’t have a company name, you can just add dot "." <br>
+    Then click "Download Desktop".
+
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture8.png?raw=true)
  
+3.	This will open a new page with the activation key. click "Copy to clipboard".
 
-3.	This will open a new page with the activation key.
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture9.png?raw=true)
  
-4.	After installing Neo4j desktop, copy the activation key and paste it into "Software Key" and click "Activate".
+4.	After installing Neo4j desktop, paste the activation key into "Software Key" and click "Activate".
 
-5.	Install NeoDash from the following link.
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture10.png?raw=true)
+
+5.	Install NeoDash from the following [link](https://install.graphapp.io/).
 
 6.	This will show a pop-up, click on "Open Neo4j Desktop".
 
-7.	Neo4j will open and ask for confirmation. 
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture11.png?raw=true)
+
+7.	Neo4j will open and ask for confirmation.
+
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture12.png?raw=true)
  
 8.	Click on "Graphs App" button on the left. Then, hover over "NeoDash" and click "Open".
+
+    ![image](https://github.com/Rothamsted/knetgraphs-gene-traits/blob/main/images_for_HTML/Picture13.png?raw=true)
                                                   
 9.	This will open a new window for NeoDash. Follow the same steps as [previous section](#loading-neoDash-dashboard-file-in-web-browser) to load the dashboard.
