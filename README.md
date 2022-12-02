@@ -90,11 +90,12 @@ For running the jupyter notebook for gene-concept relations from the database,<b
     (note: change "path/to/interactive_jupyter_notebook" to actual path)
 
     ```
-    conda create -n my-conda-env python=3.9.12      # creates new virtual env
-    conda activate my-conda-env                     # activate environment in terminal
-    cd "path/to/interactive_jupyter_notebook"       # change directory to interactive_jupyter_notebook folder
-    pip install -r requirements.txt                 # install requirements
-    jupyter notebook                                # start server + kernel inside my-conda-env
+    conda create -n my-conda-env python=3.9.12          # creates new virtual env
+    conda activate my-conda-env                         # activate environment in terminal
+    cd "path/to/interactive_jupyter_notebook"           # change directory to interactive_jupyter_notebook folder
+    pip install -r requirements.txt                     # install requirements
+    jupyter nbextension enable --py widgetsnbextension  # activate the widgets
+    jupyter notebook                                    # start server + kernel inside my-conda-env
     ```
 
 
