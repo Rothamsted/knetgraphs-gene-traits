@@ -80,7 +80,6 @@ For running the jupyter notebook for gene-concept relations from the database,<b
 ### Download the notebooks
 
 [Download the zipped folder](https://github.com/Rothamsted/knetgraphs-gene-traits/raw/main/interactive_jupyter_notebook.zip) for the interactive notebooks and the required files and unzip it. 
-<br>
 
 ### Install conda and dependncies
 
@@ -98,6 +97,7 @@ For running the jupyter notebook for gene-concept relations from the database,<b
     jupyter notebook                                    # start server + kernel inside my-conda-env
     ```
 
+3. Choose the notebook to run.
 
 # Requirements
 - python v3.9.12
@@ -105,6 +105,9 @@ For running the jupyter notebook for gene-concept relations from the database,<b
 - numpy v1.21.2
 - matplotlib v3.4.3
 - scipy v1.7.3
-- ipympl v0.9.2
 - sparqlwrapper v1.8.5
+- ipympl v0.9.2
 - ipywidgets v7.6.5
+- jupyter v1.0.0
+- ipykernel v6.9.1
+- jupyterlab
