@@ -86,10 +86,10 @@ For running the jupyter notebook for gene-concept relations from the database,<b
 1. [Install Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
 2. Open the miniconda prompt and write the following commands:<br>
-    (note: change "path/to/interactive_jupyter_notebook" to actual path)
+    *(note: change "path/to/interactive_jupyter_notebook" to actual path)*
 
     ```
-    conda create -n my-conda-env python=3.9.12          # creates new virtual env
+    conda create -n my-conda-env python=3.9.12          # create new virtual env
     conda activate my-conda-env                         # activate environment in terminal
     cd "path/to/interactive_jupyter_notebook"           # change directory to interactive_jupyter_notebook folder
     pip install -r requirements.txt                     # install requirements
