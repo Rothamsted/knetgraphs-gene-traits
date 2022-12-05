@@ -346,30 +346,37 @@ def get_df_Ftest_sorted(dframe_GeneTrait, total_DEXgenes, total_db_genes):
 
     # sort the dataframe according to adjusted p-value and update the dataframe index
     df_Ftest_sorted = df_Ftest_sorted.sort_values(by=['adj p-value']).reset_index(drop=True)
-    
 
-    ### create download links for final tables and show first 10 rows of each table ###
 
-    # gene-trait table:
-    print("\nThe gene-concept table below has " + str(dframe_GeneTrait_filtered.shape[0]) +
-    " rows.\nTo view the whole table, see the 'View whole tables section' or click on the download link below:")
-    display(create_download_link(dframe_GeneTrait_filtered, "GeneConcept_filtered_table.csv", "Download gene-concept table CSV file"))
+    if len(dframe_GeneTrait_filtered) != 0 and len(df_Ftest_sorted) != 0:
+        
+        ### create download links for final tables and show first 10 rows of each table ###
 
-    # copy the head of the dataframe to avoid editing and changing data type of the original
-    df_GeneTrait_filtered = dframe_GeneTrait_filtered[:].copy()
-    df_GeneTrait_filtered = df_GeneTrait_filtered.head(10)
-    # display gene-trait table by rendering the HTML to clickable
-    s = "View Network"
-    df_GeneTrait_filtered['Network URL'] = df_GeneTrait_filtered['Network URL'].apply(lambda x: f'<a href="{x}">{s}</a>')
-    display(HTML(df_GeneTrait_filtered.to_html(render_links=True, escape=False)))
+        # gene-trait table:
+        print("\nThe gene-concept table below has " + str(dframe_GeneTrait_filtered.shape[0]) +
+        " rows.\nTo view the whole table, see the 'View whole tables section' or click on the download link below:")
+        display(create_download_link(dframe_GeneTrait_filtered, "GeneConcept_filtered_table.csv", "Download gene-concept table CSV file"))
 
-    # Trait enrichment table:
-    print("\nThe enrichment table below has " + str(df_Ftest_sorted.shape[0]) +
-    " rows.\nTo view the whole table, see the 'View whole tables section' or click on the download link below:")
-    display(create_download_link(df_Ftest_sorted, "enrichment_table.csv", "Download enrichment table CSV file"))
-    display(df_Ftest_sorted.head(10))
+        # copy the head of the dataframe to avoid editing and changing data type of the original
+        df_GeneTrait_filtered = dframe_GeneTrait_filtered[:].copy()
+        df_GeneTrait_filtered = df_GeneTrait_filtered.head(10)
+        # display gene-trait table by rendering the HTML to clickable
+        s = "View Network"
+        df_GeneTrait_filtered['Network URL'] = df_GeneTrait_filtered['Network URL'].apply(lambda x: f'<a href="{x}">{s}</a>')
+        display(HTML(df_GeneTrait_filtered.to_html(render_links=True, escape=False)))
+
+        # Trait enrichment table:
+        print("\nThe enrichment table below has " + str(df_Ftest_sorted.shape[0]) +
+        " rows.\nTo view the whole table, see the 'View whole tables section' or click on the download link below:")
+        display(create_download_link(df_Ftest_sorted, "enrichment_table.csv", "Download enrichment table CSV file"))
+        display(df_Ftest_sorted.head(10))    
+
+    else:
+        print("\nNo matching results!")
 
     return dframe_GeneTrait_filtered, df_Ftest_sorted
+
+    
 
 
 
