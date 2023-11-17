@@ -41,14 +41,13 @@ def get_concepts():
 # A function to create dataframe for Tax IDs and their names
 def df_taxID():
     """This function creates a dataframe for Tax IDs and their names."""
-
     dframe_taxID = pd.DataFrame({'Tax IDs': ['4565', '3702', '4530'],
                                 'Tax Names': ['Triticum aestivum (wheat)',
                                             'Arabidopsis thaliana (thale cress)',
                                             'Oryza sativa (rice)'],
-                                'Database URL': ['https://knetminer.com/ws/wheatknet/',
-                                            'https://knetminer.com/ws/araknet/',
-                                            'https://knetminer.com/ws/riceknet/']})
+                                'Database URL': ['https://knetminer.com/ci-test/client',
+                                            'https://knetminer.com/ci-test/client',
+                                            'https://knetminer.com/ci-test/client']})
     return dframe_taxID
 
 
@@ -202,7 +201,8 @@ def get_database_csv(taxID, database, concept):
             onto_acc = first_term
         
         # create the url and append it to the list
-        url = f'{database}genepage?list={geneAcc}&keyword=%22{onto_acc}%22'
+        # TODO: not needed, it can be created this way where it's needed
+        url = f'{database}/html/genepage.jsp?list={geneAcc}&keyword=%22{onto_acc}%22'
         urls.append(url)
         
     # add urls to dataframe
