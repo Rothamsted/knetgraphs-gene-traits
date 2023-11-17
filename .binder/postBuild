@@ -1,0 +1,4 @@
+set -ex
+
+cd interactive_jupyter_notebook
+tar xv --bzip2 -f gene-association-tables.tar.bz2
