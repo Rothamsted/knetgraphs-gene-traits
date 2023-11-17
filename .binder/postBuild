@@ -1,6 +1,6 @@
 set -ex
 
-printf "\n\n  Unzipping Gene Association Tables\n"
+printf "\n\n  Unzipping Gene Association Tables\n\n"
 cd interactive_jupyter_notebook
 tar xv --bzip2 -f gene-association-tables.tar.bz2
-printf "\n  Done\n"
+printf "\n  Done\n\n"
